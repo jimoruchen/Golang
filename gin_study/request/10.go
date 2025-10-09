@@ -17,11 +17,6 @@ func main() {
 		fmt.Println(fileHeader.Filename)
 		fmt.Println(fileHeader.Size)
 
-		//file, _ := fileHeader.Open()
-		//byteData, _ := io.ReadAll(file)
-		//err = os.WriteFile("xxx.jpg", byteData, 0666)
-		//fmt.Println(err)
-
 		err = c.SaveUploadedFile(fileHeader, "./upload/"+fileHeader.Filename)
 		fmt.Println(err)
 	})

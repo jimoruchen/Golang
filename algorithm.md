@@ -258,6 +258,140 @@ func removeElement1(nums []int, val int) int {
 
 <hr>
 
+## 160、相交链表
+### **题目**
+给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 null 。
+
+* 示例1：
+>输入：intersectVal = 8, listA = [4,1,8,4,5], listB = [5,6,1,8,4,5], skipA = 2, skipB = 3
+>输出：Intersected at '8'
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+	if headA == nil || headB == nil {
+		return nil
+	}
+	curA, curB := headA, headB
+	for curA != curB {
+		if curA != nil {
+			curA = curA.Next
+		} else {
+			curA = headB
+		}
+		if curB != nil {
+			curB = curB.Next
+		} else {
+			curB = headA
+		}
+	}
+	return curA
+}
+
+func getIntersectionNode1(headA, headB *ListNode) *ListNode {
+	if headA == nil || headB == nil {
+		return nil
+	}
+	var maps = make(map[*ListNode]struct{})
+	curA, curB := headA, headB
+	for curA != nil {
+		maps[curA] = struct{}{}
+		curA = curA.Next
+	}
+	for curB != nil {
+		if _, ok := maps[curB]; ok {
+			return curB
+		} else {
+			curB = curB.Next
+		}
+	}
+	return nil
+}
+
+func getIntersectionNode2(headA, headB *ListNode) *ListNode {
+	if headA == nil || headB == nil {
+		return nil
+	}
+	var maps = make(map[*ListNode]bool)
+	curA, curB := headA, headB
+	for curA != nil {
+		maps[curA] = true
+		curA = curA.Next
+	}
+	for curB != nil {
+		if maps[curB] {
+			return curB
+		} else {
+			curB = curB.Next
+		}
+	}
+	return nil
+}
+
+func CreatLinkList(nums []int) *ListNode {
+	if len(nums) == 0 {
+		return nil
+	}
+	head := &ListNode{Val: nums[0]}
+	cur := head
+	for i := 1; i < len(nums); i++ {
+		cur.Next = &ListNode{Val: nums[i]}
+		cur = cur.Next
+	}
+	return head
+}
+
+func PrintList(head *ListNode) {
+	cur := head
+	for cur != nil {
+		fmt.Printf("%d->", cur.Val)
+		cur = cur.Next
+	}
+	fmt.Printf("nil\n")
+}
+
+func main() {
+	// 先创建公共的相交部分
+	common := &ListNode{Val: 8}
+	common.Next = &ListNode{Val: 4}
+	common.Next.Next = &ListNode{Val: 5}
+
+	// 构造 headA: 4 -> 1 -> [8 -> 4 -> 5]
+	headA := &ListNode{Val: 4}
+	headA.Next = &ListNode{Val: 1}
+	headA.Next.Next = common
+
+	// 构造 headB: 5 -> 6 -> 1 -> [8 -> 4 -> 5]
+	headB := &ListNode{Val: 5}
+	headB.Next = &ListNode{Val: 6}
+	headB.Next.Next = &ListNode{Val: 1}
+	headB.Next.Next.Next = common
+
+	// 打印验证
+	PrintList(headA) // 4->1->8->4->5->nil
+	PrintList(headB) // 5->6->1->8->4->5->nil
+
+	// 查找交点
+	headC := getIntersectionNode(headA, headB)
+	if headC != nil {
+		fmt.Printf("相交于节点，值为: %d\n", headC.Val) // 应该输出 8
+	} else {
+		fmt.Println("无交点")
+	}
+}
+```
+
+<hr>
+
 ## 283、移动零
 ### **题目**
 给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。

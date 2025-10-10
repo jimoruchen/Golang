@@ -112,6 +112,81 @@ func main() {
 
 <hr>
 
+## 21、合并两个有序链表
+### **题目**
+将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
+
+* 示例1：
+>输入：l1 = [1,2,4], l2 = [1,3,4]
+>输出：[1,1,2,3,4,4]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+	dummy := &ListNode{Val: 0}
+	pre := dummy
+	for list1 != nil && list2 != nil {
+		if list1.Val <= list2.Val {
+			pre.Next = list1
+			list1 = list1.Next
+		} else {
+			pre.Next = list2
+			list2 = list2.Next
+		}
+		pre = pre.Next
+	}
+	if list1 != nil {
+		pre.Next = list1
+	}
+	if list2 != nil {
+		pre.Next = list2
+	}
+	return dummy.Next
+}
+
+func CreatLinkList(nums []int) *ListNode {
+	if len(nums) == 0 {
+		return nil
+	}
+	head := &ListNode{Val: nums[0]}
+	cur := head
+	for i := 1; i < len(nums); i++ {
+		cur.Next = &ListNode{Val: nums[i]}
+		cur = cur.Next
+	}
+	return head
+}
+
+func PrintList(head *ListNode) {
+	cur := head
+	for cur != nil {
+		fmt.Printf("%d->", cur.Val)
+		cur = cur.Next
+	}
+	fmt.Printf("nil\n")
+}
+
+func main() {
+	var nums1 = []int{1, 2, 4}
+	var nums2 = []int{1, 3, 4}
+	list1 := CreatLinkList(nums1)
+	list2 := CreatLinkList(nums2)
+	head := mergeTwoLists(list1, list2)
+	PrintList(head)
+}
+```
+
+<hr>
+
 ## 24、两两交换链表中的节点
 ### **题目**
 给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题（即，只能进行节点交换）。

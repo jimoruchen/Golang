@@ -424,3 +424,354 @@ func main() {
 ```
 
 ### bind绑定器
+
+#### 查询参数
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+	r.GET("/", func(c *gin.Context) {
+		type User struct {
+			Name string `form:"name"`
+			Age  int    `form:"age"`
+		}
+		var user User
+		err := c.ShouldBindQuery(&user)
+		fmt.Println(user, err)
+	})
+	r.Run(":8080")
+}
+```
+
+#### 路径参数
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+	r.GET("users/:id/:name", func(c *gin.Context) {
+		type User struct {
+			Name string `uri:"name"`
+			Id   int    `uri:"id"`
+		}
+		var user User
+		err := c.ShouldBindUri(&user)
+		fmt.Println(user, err)
+	})
+	r.Run(":8080")
+}
+```
+
+#### 绑定表单
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+	r.POST("form", func(c *gin.Context) {
+		type User struct {
+			Name string `form:"name"`
+			Id   int    `form:"id"`
+		}
+		var user User
+		err := c.ShouldBind(&user)
+		fmt.Println(user, err)
+	})
+	r.Run(":8080")
+}
+```
+
+#### 绑定JSON
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+	r.POST("json", func(c *gin.Context) {
+		type User struct {
+			Name string `json:"name"`
+			Id   int    `json:"id"`
+		}
+		var user User
+		err := c.ShouldBindJSON(&user)
+		fmt.Println(user, err)
+	})
+	r.Run(":8080")
+}
+```
+
+#### 参数校验
+
+##### required：必填字段，如：binding:"required", min 最小长度，如：binding:"min=5", max 最大长度，如：binding:"max=10"
+```go
+package main
+
+import (
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+	r.POST("", func(c *gin.Context) {
+		type User struct {
+			Name string `json:"name" binding:"required,min=2,max=6"`
+			Age  int    `json:"age"`
+		}
+		var user User
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.String(200, err.Error())
+			return
+		}
+		c.JSON(200, user)
+	})
+	r.Run(":8080")
+}
+```
+
+##### eqfield 等于其他字段的值，如：PassWord string `binding:"eqfield=Password"`, nefield 不等于其他字段的值
+```go
+package main
+
+import (
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+	r.POST("/", func(c *gin.Context) {
+		type User struct {
+			Pwd   string `json:"pwd" binding:"required"`
+			RePwd string `json:"rePwd" binding:"eqfield=Pwd"`
+		}
+		var user User
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.String(200, err.Error())
+			return
+		}
+		c.JSON(200, user)
+	})
+	r.Run(":8080")
+}
+```
+
+##### 枚举  只能是red 或green, oneof=red green
+```go
+package main
+
+import (
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+	r.POST("/", func(c *gin.Context) {
+		type User struct {
+			Name string `json:"name" binding:"oneof=xxx vvv"`
+		}
+		var user User
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.String(200, err.Error())
+			return
+		}
+		c.JSON(200, user)
+	})
+	r.Run(":8080")
+}
+```
+
+##### 字符串
+contains=fengfeng  // 包含fengfeng的字符串
+excludes // 不包含
+startswith  // 字符串前缀
+endswith  // 字符串后缀
+```go
+package main
+
+import (
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+	r.POST("/", func(c *gin.Context) {
+		type User struct {
+			FileName string `json:"filename" binding:"endswith=.jpg"`
+		}
+		var user User
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.String(200, err.Error())
+			return
+		}
+		c.JSON(200, user)
+	})
+	r.Run(":8080")
+}
+```
+
+##### IP校验
+```go
+package main
+
+import (
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+	r.POST("/", func(c *gin.Context) {
+		type User struct {
+			IP string `json:"ip" binding:"required,ip"`
+		}
+		var user User
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.String(200, err.Error())
+			return
+		}
+		c.JSON(200, user)
+	})
+	r.Run(":8080")
+}
+```
+
+##### IP数组校验
+{
+"ipList": ["127.1.2.1","123.1.2.2"]
+}
+```go
+package main
+
+import (
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+	r.POST("/", func(c *gin.Context) {
+		type User struct {
+			IPList []string `json:"ipList" binding:"dive,ip"`
+		}
+		var user User
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.String(200, err.Error())
+			return
+		}
+		c.JSON(200, user)
+	})
+	r.Run(":8080")
+}
+```
+
+##### 错误信息显示中文
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+	"net/http"
+	"reflect"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/locales/zh"
+	ut "github.com/go-playground/universal-translator"
+	"github.com/go-playground/validator/v10"
+	zh_translations "github.com/go-playground/validator/v10/translations/zh"
+)
+
+var translator ut.Translator
+
+func init() {
+	// 初始化中文翻译器
+	zhLocale := zh.New()
+	uni := ut.New(zhLocale, zhLocale)
+	translator, _ = uni.GetTranslator("zh")
+
+	// 获取 Gin 默认的 validator 引擎
+	validate, ok := binding.Validator.Engine().(*validator.Validate)
+	if !ok {
+		panic("failed to get validator from gin")
+	}
+
+	// 注册 tagName 函数：优先使用 label tag
+	validate.RegisterTagNameFunc(func(field reflect.StructField) string {
+		label := field.Tag.Get("label")
+		if label != "" {
+			return label
+		}
+		jsonTag := field.Tag.Get("json")
+		if jsonTag != "" && jsonTag != "-" {
+			return strings.Split(jsonTag, ",")[0]
+		}
+		return field.Name
+	})
+
+	// 将中文翻译注册到 Gin 使用的 validator 实例上
+	if err := zh_translations.RegisterDefaultTranslations(validate, translator); err != nil {
+		panic("failed to register translations: " + err.Error())
+	}
+}
+
+// TranslateValidationError 统一返回验证错误信息
+func TranslateValidationError(err error) string {
+	var errs validator.ValidationErrors
+	if errors.As(err, &errs) {
+		var messages []string
+		for _, e := range errs {
+			messages = append(messages, e.Translate(translator))
+		}
+		return strings.Join(messages, "; ")
+	}
+	return err.Error()
+}
+
+type User struct {
+	Name  string `json:"name" binding:"required" label:"用户名"`
+	Email string `json:"email" binding:"required,email" label:"邮箱地址"`
+}
+
+func main() {
+	r := gin.Default()
+
+	r.POST("/user", func(c *gin.Context) {
+		var user User
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.String(http.StatusOK, TranslateValidationError(err))
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": fmt.Sprintf("Hello, %s! Your email is %s.", user.Name, user.Email),
+		})
+	})
+
+	r.Run()
+}
+```
+

@@ -706,6 +706,75 @@ func main() {
 
 <hr>
 
+## 237、删除链表的节点
+### 题目
+有一个单链表的 head，我们想删除它其中的一个节点 node。
+
+* 示例1：
+>输入：head = [4,5,1,9], node = 5
+>输出：[4,1,9]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func deleteNode(node *ListNode) {
+	node.Val = node.Next.Val
+	node.Next = node.Next.Next
+}
+
+func findNode(head *ListNode, val int) *ListNode {
+	for head != nil {
+		if head.Val == val {
+			return head
+		} else {
+			head = head.Next
+		}
+	}
+	return nil
+}
+
+func CreateLinkedList(nums []int) *ListNode {
+	if len(nums) == 0 {
+		return nil
+	}
+	head := &ListNode{Val: nums[0]}
+	cur := head
+	for i := 1; i < len(nums); i++ {
+		cur.Next = &ListNode{Val: nums[i], Next: nil}
+		cur = cur.Next
+	}
+	return head
+}
+
+func PrintList(head *ListNode) {
+	for head != nil {
+		fmt.Printf("%d->", head.Val)
+		head = head.Next
+	}
+	fmt.Println("nil")
+}
+
+func main() {
+	var nums = []int{4, 5, 1, 9}
+	head := CreateLinkedList(nums)
+	nodeToDelete := findNode(head, 1)
+	if nodeToDelete != nil && nodeToDelete.Next != nil {
+		deleteNode(nodeToDelete)
+	}
+	PrintList(head)
+}
+```
+
+<hr>
+
 ## 283、移动零
 ### 题目
 给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。

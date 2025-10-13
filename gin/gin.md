@@ -527,7 +527,8 @@ func main() {
 
 #### 参数校验
 
-##### required：必填字段，如：binding:"required", min 最小长度，如：binding:"min=5", max 最大长度，如：binding:"max=10"
+##### required
+必填字段，如：binding:"required", min 最小长度，如：binding:"min=5", max 最大长度，如：binding:"max=10"
 ```go
 package main
 
@@ -553,7 +554,8 @@ func main() {
 }
 ```
 
-##### eqfield 等于其他字段的值，如：PassWord string `binding:"eqfield=Password"`, nefield 不等于其他字段的值
+##### eqfield 
+等于其他字段的值，如：PassWord string `binding:"eqfield=Password"`, nefield 不等于其他字段的值
 ```go
 package main
 
@@ -579,7 +581,8 @@ func main() {
 }
 ```
 
-##### 枚举  只能是red 或green, oneof=red green
+##### 枚举  
+只能是red 或green, oneof=red green
 ```go
 package main
 

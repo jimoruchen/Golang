@@ -815,6 +815,69 @@ func moveZeroes1(nums []int) {
 
 <hr>
 
+## 328、奇偶链表
+### 题目
+给定单链表的头节点 head ，将所有索引为奇数的节点和索引为偶数的节点分别分组，保持它们原有的相对顺序，然后把偶数索引节点分组连接到奇数索引节点分组之后，返回重新排序的链表。
+
+* 示例1：
+>输入：head = [1,2,3,4,5]
+>输出：[1,3,5,2,4]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func CreateLinkedList(nums []int) *ListNode {
+	head := &ListNode{Val: nums[0]}
+	cur := head
+	for i := 1; i < len(nums); i++ {
+		cur.Next = &ListNode{Val: nums[i]}
+		cur = cur.Next
+	}
+	return head
+}
+
+func PrintLinkedList(head *ListNode) {
+	for head != nil {
+		fmt.Printf("%d->", head.Val)
+		head = head.Next
+	}
+	fmt.Println("nil")
+}
+
+func oddEvenList(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	pre := head
+	cur := head.Next
+	tmp := head.Next
+	for cur != nil && cur.Next != nil {
+		pre.Next = cur.Next
+		pre = pre.Next
+		cur.Next = pre.Next
+		cur = cur.Next
+	}
+	pre.Next = tmp
+	return head
+}
+
+func main() {
+	var nums = []int{1, 2, 3, 4, 5}
+	head := CreateLinkedList(nums)
+	PrintLinkedList(head)
+	PrintLinkedList(oddEvenList(head))
+}
+```
+
+<hr>
 
 ## 485、最大连续 1 的个数
 ### 题目
@@ -846,3 +909,82 @@ func findMaxConsecutiveOnes(nums []int) int {
 }
 ```
 
+<hr>
+
+## 876、链表的中间结点
+### 题目
+给定一个头结点为 head 的非空单链表，返回链表的中间结点。  
+如果有两个中间结点，则返回第二个中间结点。  
+
+* 示例1：
+>输入：head = [1,2,3,4,5]
+>输出：[3,4,5]
+
+* 示例2：
+>输入：head = [1,2,3,4,5,6]
+>输出：[4,5,6]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func CreateLinkedList(nums []int) *ListNode {
+	head := &ListNode{Val: nums[0]}
+	cur := head
+	for i := 1; i < len(nums); i++ {
+		cur.Next = &ListNode{Val: nums[i]}
+		cur = cur.Next
+	}
+	return head
+}
+
+func PrintLinkedList(head *ListNode) {
+	for head != nil {
+		fmt.Printf("%d->", head.Val)
+		head = head.Next
+	}
+	fmt.Println("nil")
+}
+
+func middleNode(head *ListNode) *ListNode {
+	dummy := &ListNode{-1, head}
+	pre := dummy
+	cur := pre
+	length := 0
+	for pre.Next != nil {
+		length++
+		pre = pre.Next
+	}
+	mid := length/2 + 1
+	for mid != 0 {
+		cur = cur.Next
+		mid--
+	}
+	return cur
+}
+
+func middleNode1(head *ListNode) *ListNode {
+	slow := head
+	fast := head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	return slow
+}
+
+func main() {
+	var nums = []int{1, 2, 3, 4, 5, 6}
+	head := CreateLinkedList(nums)
+	PrintLinkedList(head)
+	middle := middleNode(head)
+	PrintLinkedList(middle)
+}
+```

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Golang/gin_study/response/res"
+	"Golang/gin/response/res"
 
 	"github.com/gin-gonic/gin"
 )

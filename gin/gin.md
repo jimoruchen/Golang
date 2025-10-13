@@ -159,8 +159,8 @@ import "github.com/gin-gonic/gin"
 
 func main() {
 	r := gin.Default()
-	//r.LoadHTMLGlob("gin_study/response/static/*")  	//加载所有
-	r.LoadHTMLFiles("gin_study/response/static/index.html") //加载单个
+	//r.LoadHTMLGlob("gin/response/static/*")  	//加载所有
+	r.LoadHTMLFiles("gin/response/static/index.html") //加载单个
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index.html", map[string]any{
 			"title": "即墨如尘",
@@ -925,6 +925,433 @@ func main() {
 
 ##### 自定义验证器
 ```go
+package main
 
+import (
+	"errors"
+	"reflect"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
+)
+
+type UserInfo struct {
+	Name string `json:"name" binding:"required,sign" msg:"用户名必须是 xxx"`
+	Age  int    `json:"age" binding:"gte=1,lte=150" msg:"年龄必须在 1-150 之间"`
+}
+
+func GetValidMsg(err error) string {
+	var ve validator.ValidationErrors
+	if errors.As(err, &ve) {
+		for _, fieldErr := range ve {
+			// 获取结构体字段
+			f, exist := reflect.TypeOf(UserInfo{}).FieldByName(fieldErr.Field())
+			if exist {
+				if msg := f.Tag.Get("msg"); msg != "" {
+					return msg
+				}
+			}
+		}
+	}
+	return err.Error()
+}
+
+func signValid(fl validator.FieldLevel) bool {
+	field := fl.Field()
+	if field.Kind() != reflect.String {
+		return false
+	}
+	return field.String() == "xxx"
+}
+
+func main() {
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("sign", signValid)
+	}
+
+	router := gin.Default()
+
+	router.POST("/", func(c *gin.Context) {
+		var user UserInfo
+		if err := c.ShouldBindJSON(&user); err != nil {
+			msg := GetValidMsg(err)
+			c.JSON(400, gin.H{
+				"code": 400,
+				"msg":  msg,
+				"data": nil,
+			})
+			return
+		}
+
+		c.JSON(200, gin.H{
+			"code": 0,
+			"msg":  "success",
+			"data": user,
+		})
+	})
+
+	router.Run(":80")
+}
+```
+<img src="https://s2.loli.net/2025/10/11/iGkaqLg1ESDZHFc.png" >   
+
+```go
+package main
+
+import (
+	"errors"
+	"reflect"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
+)
+
+type UserInfo struct {
+	Name string `json:"name" binding:"required,sign" msg:"用户名必须是 xxx"`
+	Age  int    `json:"age" binding:"gte=1,lte=150" msg:"年龄必须在 1-150 之间"`
+}
+
+func GetValidMsg(err error) string {
+	var ve validator.ValidationErrors
+	if errors.As(err, &ve) {
+		for _, fieldErr := range ve {
+			// 获取结构体字段
+			f, exist := reflect.TypeOf(UserInfo{}).FieldByName(fieldErr.Field())
+			if exist {
+				if msg := f.Tag.Get("msg"); msg != "" {
+					return msg
+				}
+			}
+		}
+	}
+	return err.Error()
+}
+
+func GetValidMsg1(err error, obj any) string {
+	var ve validator.ValidationErrors
+	if !errors.As(err, &ve) {
+		return err.Error()
+	}
+	t := reflect.TypeOf(obj)
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	for _, fieldErr := range ve {
+		f, exist := t.FieldByName(fieldErr.Field())
+		if exist {
+			if tag := f.Tag.Get("msg"); tag != "" {
+				return tag
+			}
+		}
+	}
+	return err.Error()
+}
+
+func signValid(fl validator.FieldLevel) bool {
+	field := fl.Field() //返回值是 reflect.Value 类型
+	if field.Kind() != reflect.String {
+		return false
+	}
+	return field.String() == "xxx"
+}
+
+func main() {
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("sign", signValid)
+	}
+
+	router := gin.Default()
+
+	router.POST("/", func(c *gin.Context) {
+		var user UserInfo
+		if err := c.ShouldBindJSON(&user); err != nil {
+			msg := GetValidMsg1(err, &user)
+			c.JSON(400, gin.H{
+				"code": 400,
+				"msg":  msg,
+				"data": nil,
+			})
+			return
+		}
+
+		c.JSON(200, gin.H{
+			"code": 0,
+			"msg":  "success",
+			"data": user,
+		})
+	})
+
+	router.Run(":8080")
+}
 ```
 
+### 路由
+
+#### 路由分组
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	route := gin.Default()
+
+	r := route.Group("/api")
+	r.POST("/users", func(c *gin.Context) {
+		url := c.Request.URL
+		fmt.Println(url, c.Request.Method)
+	})
+
+	route.Run(":8080")
+}
+```
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+
+	apiGroup := r.Group("/api")
+	UserGroup(apiGroup)
+
+	r.Run(":8080")
+}
+
+func UserView(c *gin.Context) {
+	path := c.Request.URL
+	fmt.Println(c.Request.Method, path)
+}
+
+func UserGroup(r *gin.RouterGroup) {
+	r.GET("/users", UserView)
+	r.POST("/users", UserView)
+}
+```
+
+#### 中间件
+
+##### 中间件放行
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
+func Home(c *gin.Context) {
+	fmt.Println("Home...")
+	c.String(200, "Home")
+}
+
+func M1(c *gin.Context) {
+	fmt.Println("M1请求部分")
+	c.Next()
+	fmt.Println("M1响应部分")
+}
+
+func M2(c *gin.Context) {
+	fmt.Println("M2请求部分")
+	c.Next()
+	fmt.Println("M2响应部分")
+}
+
+func main() {
+	r := gin.Default()
+	r.GET("/", M1, M2, Home)
+
+	r.Run(":8080")
+}
+```
+M1请求部分
+M2请求部分
+Home...
+M2响应部分
+M1响应部分
+
+##### 中间件拦截响应
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
+func Home1(c *gin.Context) {
+	fmt.Println("Home...")
+	c.String(200, "Home")
+}
+
+func M3(c *gin.Context) {
+	fmt.Println("M3请求部分")
+	c.Abort()
+	fmt.Println("M3响应部分")
+}
+
+func main() {
+	r := gin.Default()
+	r.GET("/", M3, Home1)
+
+	r.Run(":8080")
+}
+```
+M3请求部分
+M3响应部分
+
+##### 局部中间件
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// AuthMiddleware 身份验证中间件
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := c.GetHeader("Authorization")
+		if token == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "未提供认证信息"})
+			c.Abort() // 终止请求处理链
+			return
+		}
+		// 这里可以添加更复杂的验证逻辑，比如 JWT 解析
+		if token != "my-secret-token" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "认证失败"})
+			c.Abort()
+			return
+		}
+
+		// 认证通过，继续执行
+		c.Next()
+	}
+}
+
+// MetricsMiddleware 另一个中间件，用于记录特定路由的访问
+func MetricsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 记录访问次数等指标
+		c.Next()
+	}
+}
+
+func main() {
+	r := gin.New()
+
+	// --- 局部中间件应用到单个路由 ---
+	r.GET("/public", func(c *gin.Context) {
+		c.JSON(200, gin.H{"message": "公开接口，无需认证"})
+	})
+
+	// 这个路由需要认证
+	r.GET("/private", AuthMiddleware(), func(c *gin.Context) {
+		c.JSON(200, gin.H{"message": "私有接口，认证成功"})
+	})
+
+	// --- 局部中间件应用到路由组 ---
+	authorized := r.Group("/admin", AuthMiddleware(), MetricsMiddleware())
+	{
+		authorized.GET("/dashboard", func(c *gin.Context) {
+			c.JSON(200, gin.H{"data": "管理员仪表盘"})
+		})
+
+		authorized.POST("/users", func(c *gin.Context) {
+			c.JSON(200, gin.H{"message": "创建用户"})
+		})
+	}
+
+	// 注意：/public 路由不会经过 AuthMiddleware 或 MetricsMiddleware
+
+	r.Run(":8080")
+}
+```
+局部中间件只应用到特定的路由组或特定的路由上。它允许你为不同的 API 端点定制不同的处理逻辑。
+
+##### 全局中间件
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Logger 一个简单的日志中间件
+func Logger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		t := time.Now()
+		fmt.Printf("请求开始: %s %s\n", c.Request.Method, c.Request.URL.Path)
+
+		// 在中间件中设置变量，可以在后续的处理器中获取
+		c.Set("example", "全局中间件设置的值")
+
+		// 执行下一个中间件或最终的处理器
+		c.Next()
+
+		// 请求处理完成后执行
+		latency := time.Since(t)
+		fmt.Printf("请求结束，耗时: %v\n", latency)
+	}
+}
+
+func Logger1(c *gin.Context) {
+	t := time.Now()
+	fmt.Printf("请求开始: %s %s\n", c.Request.Method, c.Request.URL.Path)
+
+	// 在中间件中设置变量，可以在后续的处理器中获取
+	c.Set("example", "全局中间件设置的值")
+
+	// 执行下一个中间件或最终的处理器
+	c.Next()
+
+	// 请求处理完成后执行
+	latency := time.Since(t)
+	fmt.Printf("请求结束，耗时: %v\n", latency)
+}
+
+func main() {
+	r := gin.Default() // Default() 默认包含了 Logger 和 Recovery 中间件
+
+	// 注册全局中间件
+	//r.Use(Logger())  
+	r.Use(Logger1)		//不能加括号
+
+	// 定义一些路由
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{"message": "pong"})
+	})
+
+	r.GET("/user", func(c *gin.Context) {
+		// 可以获取全局中间件中设置的值
+		value, exists := c.Get("example")
+		if exists {
+			fmt.Println("从中间件获取的值:", value)
+		}
+		c.JSON(200, gin.H{"user": "admin"})
+	})
+
+	r.Run(":8080") // 监听并在 0.0.0.0:8080 启动服务
+}
+```
+全局中间件会应用到所有的路由处理器（Handlers）上。一旦注册，每个进入的 HTTP 请求在到达其最终的处理函数之前，都会经过这些中间件。
+
+<img src="https://s2.loli.net/2025/10/12/yL9qEjO2sfPZdWh.png"  alt="">

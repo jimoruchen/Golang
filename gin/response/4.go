@@ -4,8 +4,8 @@ import "github.com/gin-gonic/gin"
 
 func main() {
 	r := gin.Default()
-	//r.LoadHTMLGlob("gin_study/response/static/*")  	//加载所有
-	r.LoadHTMLFiles("gin_study/response/static/index.html") //加载单个
+	//r.LoadHTMLGlob("gin/response/static/*")  	//加载所有
+	r.LoadHTMLFiles("gin/response/static/index.html") //加载单个
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index.html", map[string]any{
 			"title": "即墨如尘",

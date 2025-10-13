@@ -2710,16 +2710,6 @@ func main() {
 	})
 }
 ```
-reflect.ValueOf(obj) 返回一个 reflect.Value 类型的对象。它封装了 obj 的实际值，而不仅仅是类型信息。
-读取值
-修改值（在满足条件时）
-调用方法
-访问字段（如果是结构体）
-构建切片、map 等
-
-v.Type()和typeObj := reflect.TypeOf(obj)等价，完整的类型信息。
-
-<a href="https://sm.ms/image/EgymqTjo6bYJQVc" target="_blank"><img src="https://s2.loli.net/2025/09/22/EgymqTjo6bYJQVc.png" ></a>
 
 #### 通过反射修改值
 ```go
@@ -2863,20 +2853,101 @@ func main() {
 	Call(&user)
 }
 ```
-reflect.Value 是 reflect 包中的一个结构体类型（实际是 struct），它封装了一个任意类型的值，并提供了一系列方法来：
-查看这个值的类型
-获取或修改它的字段
-调用它的方法
-设置它的值（如果可设置）
-判断它的种类（是 struct？int？string？）
 
-获取 reflect.Value	reflect.ValueOf(x)
-获取类型信息	v.Type(), v.Kind()
-获取值内容	v.Int(), v.String(), v.Interface()
-修改值	v.SetXxx()（必须可设置）
-结构体字段	v.Field(i) 或 v.FieldByName("Name")
-方法调用	v.Method(i).Call(args)
-指针解引用	v.Elem()
+reflect.ValueOf(obj) 返回一个 reflect.Value 类型的对象。它封装了 obj 的实际值，而不仅仅是类型信息。  
+读取值  
+修改值（在满足条件时）  
+调用方法  
+访问字段（如果是结构体）  
+构建切片、map 等  
+
+v.Type()和typeObj := reflect.TypeOf(obj)等价，完整的类型信息。  
+
+<img src="https://s2.loli.net/2025/09/22/EgymqTjo6bYJQVc.png" >
+
+reflect.Type提供了以下方法来获取结构体字段信息：  
+// 获取第i个字段的信息  
+Field(i int) StructField   
+// 根据字段名查找字段信息  
+FieldByName(name string) (StructField, bool)  
+// 根据方法链查找嵌套字段    
+FieldByNameFunc(match func(string) bool) (StructField, bool)    
+
+这些方法返回StructField类型，包含字段的详细信息：  
+type StructField struct {  
+Name      string    // 字段名  
+PkgPath   string    // 非导出字段的包路径  
+Type      Type      // 字段类型  
+Tag       StructTag // 字段标签  
+Offset    uintptr   // 字段在结构体中的偏移量  
+Index     []int     // 用于Type.FieldByIndex  
+Anonymous bool      // 是否是匿名字段  
+}  
+```go
+type User struct {
+    Name string `json:"name"`
+    Age  int    `json:"age"`
+}
+
+func main() {
+    t := reflect.TypeOf(User{})
+    
+    // 获取第一个字段
+    field := t.Field(0)
+    fmt.Println(field.Name) // 输出: Name
+    
+    // 根据名称获取字段
+    field, ok := t.FieldByName("Age")
+    if ok {
+        fmt.Println(field.Tag.Get("json")) // 输出: age
+    }
+}
+```
+
+reflect.Value 是 reflect 包中的一个结构体类型（实际是 struct），它封装了一个任意类型的值，并提供了一系列方法来：
+查看这个值的类型  
+获取或修改它的字段  
+调用它的方法  
+设置它的值（如果可设置）  
+判断它的种类（是 struct？int？string？）  
+
+获取 reflect.Value	reflect.ValueOf(x)  
+获取类型信息	v.Type(), v.Kind()  
+获取值内容	v.Int(), v.String(), v.Interface()  
+修改值	v.SetXxx()（必须可设置）  
+结构体字段	v.Field(i) 或 v.FieldByName("Name")  
+方法调用	v.Method(i).Call(args)  
+指针解引用	v.Elem()  
+<img src="https://s2.loli.net/2025/10/11/NQMSJuthyKiqwFE.png" >
+
+reflect.Value提供了类似的方法来获取字段的值：  
+// 获取第i个字段的值  
+Field(i int) Value  
+// 根据字段名查找字段值  
+FieldByName(name string) Value  
+// 根据方法链查找嵌套字段值  
+FieldByNameFunc(match func(string) bool) Value  
+
+这些方法直接返回字段的reflect.Value，可以进一步操作或获取其值。
+```go
+func main() {
+    u := User{Name: "Alice", Age: 25}
+    v := reflect.ValueOf(u)
+    
+    // 获取第一个字段的值
+    nameValue := v.Field(0)
+    fmt.Println(nameValue.String()) // 输出: Alice
+    
+    // 根据名称获取字段值
+    ageValue := v.FieldByName("Age")
+    fmt.Println(ageValue.Int()) // 输出: 25
+}
+```
+
+reflect.Type的Field方法返回字段的元信息(StructField)
+reflect.Value的Field方法返回字段的实际值(Value)
+使用Type的Field方法时不需要结构体实例，而Value的Field方法需要
+
 
 #### orm
 ```go

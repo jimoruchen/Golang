@@ -5,6 +5,7 @@ import (
 	"Golang/gorm/models"
 	"errors"
 	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -102,7 +103,60 @@ func query() {
 	fmt.Println(user)
 }
 
+func save() {
+	global.DB = global.DB.Debug()
+	var user = models.UserModel{
+		ID:        2,
+		Name:      "", //可以更新零值
+		Age:       20,
+		CreatedAt: time.Now(),
+	}
+	global.DB.Save(&user)
+}
+
+//Save，有主键记录就是更新，并且可以更新零值，否则就是创建
+
+func update() {
+	var user = models.UserModel{ID: 1}
+
+	global.DB.Model(&user).
+		Where("id=?", 1).
+		Update("age", 21)
+
+	fmt.Println(user)
+}
+
+func updateColumn() {
+	global.DB = global.DB.Debug()
+	var user = models.UserModel{ID: 1}
+	global.DB.Model(&user).
+		Where("id=?", 1).
+		UpdateColumn("age", 22).
+		UpdateColumn("name", "张三")
+}
+
+func updates() {
+	var user = models.UserModel{ID: 2}
+
+	//global.DB.Model(&user).
+	//	Updates(models.UserModel{
+	//		Name: "张三",
+	//		Age:  22,
+	//	})
+
+	global.DB.Model(&user).
+		Where("id = ?", 2).
+		Updates(map[string]interface{}{
+			"age": 23,
+		})
+
+	fmt.Println(user)
+}
+
 func main() {
 	global.Connect()
-	query()
+	//save()
+	//update()
+	//updateColumn()
+	updates()
 }

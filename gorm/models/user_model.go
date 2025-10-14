@@ -18,3 +18,13 @@ func (u UserModel) BeforeCreate(tx *gorm.DB) error {
 	fmt.Println("创建的钩子函数")
 	return nil
 }
+
+func (u UserModel) BeforeUpdate(tx *gorm.DB) error {
+	fmt.Println("更新的钩子函数")
+	return nil
+}
+
+func (u UserModel) BeforeDelete(tx *gorm.DB) error {
+	fmt.Println("删除的钩子函数")
+	return nil
+}

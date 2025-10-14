@@ -194,6 +194,72 @@ func main() {
 
 #### 单表操作
 ```go
+package global
+
+import (
+	"Golang/gorm/models"
+	"fmt"
+	"log"
+
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+)
+
+var DB *gorm.DB
+
+func Migrate() {
+	err := DB.AutoMigrate(&models.UserModel{})
+	if err != nil {
+		log.Fatalf("数据库迁移失败 %s", err)
+	}
+	fmt.Printf("数据库迁移成功")
+}
+
+func Connect() {
+	dst := "root:200088@tcp(127.0.0.1:3306)/gorm_db?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dst), &gorm.Config{})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	DB = db
+}
+
+```
+```go
+package models
+
+import (
+	"fmt"
+	"time"
+
+	"gorm.io/gorm"
+)
+
+type UserModel struct {
+	ID        int    `gorm:"primary_key"`
+	Name      string `gorm:"size:16;not null;unique"`
+	Age       int    `gorm:"default:18;check:age > 0"`
+	CreatedAt time.Time
+}
+
+func (u UserModel) BeforeCreate(tx *gorm.DB) error {
+	fmt.Println("创建的钩子函数")
+	return nil
+}
+
+func (u UserModel) BeforeUpdate(tx *gorm.DB) error {
+	fmt.Println("更新的钩子函数")
+	return nil
+}
+
+func (u UserModel) BeforeDelete(tx *gorm.DB) error {
+	fmt.Println("删除的钩子函数")
+	return nil
+}
+
+```
+```go
 package main
 
 import (
@@ -349,12 +415,30 @@ func updates() {
 	fmt.Println(user)
 }
 
+func Delete() {
+	global.DB = global.DB.Debug()
+
+	//var user = models.UserModel{ID: 10}
+	//global.DB.Delete(&user)
+
+	//global.DB.Delete(&models.UserModel{}, 9)
+
+	//global.DB.Delete(&models.UserModel{}, "name = ?", "Tom")
+
+	//批量删除
+	global.DB.Delete(&models.UserModel{}, []int{5, 7})
+}
+
 func main() {
 	global.Connect()
 	//save()
 	//update()
 	//updateColumn()
-	updates()
+	//updates()
+	Delete()
 }
+
 ```
 <img src="https://s2.loli.net/2025/10/14/MIAZbvuaf2V1zxB.png" >
+
+### 

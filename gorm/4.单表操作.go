@@ -153,10 +153,25 @@ func updates() {
 	fmt.Println(user)
 }
 
+func Delete() {
+	global.DB = global.DB.Debug()
+
+	//var user = models.UserModel{ID: 10}
+	//global.DB.Delete(&user)
+
+	//global.DB.Delete(&models.UserModel{}, 9)
+
+	//global.DB.Delete(&models.UserModel{}, "name = ?", "Tom")
+
+	//批量删除
+	global.DB.Delete(&models.UserModel{}, []int{5, 7})
+}
+
 func main() {
 	global.Connect()
 	//save()
 	//update()
 	//updateColumn()
-	updates()
+	//updates()
+	Delete()
 }

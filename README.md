@@ -407,6 +407,105 @@ func main() {
 
 <hr>
 
+## 141、环形链表
+### 题目
+给你一个链表的头节点 head ，判断链表中是否有环。
+如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环。  
+如果链表中存在环 ，则返回 true 。 否则，返回 false 。
+
+* 示例1：
+>输入：head = [3,2,0,-4], pos = 1
+>输出：true
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func hasCycle(head *ListNode) bool {
+	if head == nil || head.Next == nil {
+		return false
+	}
+	var maps = make(map[*ListNode]bool)
+	cur := head
+	for cur != nil {
+		if maps[cur] {
+			return true
+		} else {
+			maps[cur] = true
+			cur = cur.Next
+		}
+	}
+	return false
+}
+
+func hasCycle1(head *ListNode) bool {
+	var maps = make(map[*ListNode]struct{})
+	cur := head
+	for cur != nil {
+		if _, ok := maps[cur]; ok {
+			return true
+		} else {
+			maps[cur] = struct{}{}
+			cur = cur.Next
+		}
+	}
+	return false
+}
+
+func hasCycle2(head *ListNode) bool {
+	if head == nil || head.Next == nil {
+		return false
+	}
+	slow := head
+	fast := head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			return true
+		}
+	}
+	return false
+}
+
+func CreateLinkedList(nums []int) *ListNode {
+	head := &ListNode{Val: nums[0]}
+	cur := head
+	for i := 1; i < len(nums); i++ {
+		cur.Next = &ListNode{Val: nums[i]}
+		cur = cur.Next
+	}
+	return head
+}
+
+func PrintLinkedList(head *ListNode) {
+	cur := head
+	for cur != nil {
+		fmt.Printf("%d->", cur.Val)
+		cur = cur.Next
+	}
+	fmt.Println("nil")
+}
+
+func main() {
+	head := &ListNode{Val: 1}
+	head.Next = &ListNode{Val: 2}
+	head.Next.Next = &ListNode{Val: 3}
+	head.Next.Next.Next = &ListNode{Val: 4}
+	head.Next.Next.Next.Next = head
+	fmt.Println(hasCycle(head))
+}
+```
+
+<hr>
+
 ## 160、相交链表
 ### 题目
 给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 null 。
@@ -701,6 +800,116 @@ func main() {
 	PrintLinkedList(list)
 	list = reverseList(list)
 	PrintLinkedList(list)
+}
+```
+
+<hr>
+
+## 234、回文链表
+### 题目
+给你一个单链表的头节点 head ，请你判断该链表是否为回文链表。如果是，返回 true ；否则，返回 false 。
+
+* 示例1：
+>输入：head = [1,2,2,1]
+>输出：true
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func CreateLinkedList(nums []int) *ListNode {
+	head := &ListNode{Val: nums[0]}
+	cur := head
+	for i := 1; i < len(nums); i++ {
+		cur.Next = &ListNode{Val: nums[i]}
+		cur = cur.Next
+	}
+	return head
+}
+
+func PrintLinkedList(head *ListNode) {
+	cur := head
+	for cur != nil {
+		fmt.Printf("%d->", cur.Val)
+		cur = cur.Next
+	}
+	fmt.Println("nil")
+}
+
+func copy(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	dummy := &ListNode{}
+	cur := dummy
+	for cur1 := head; cur1 != nil; cur1 = cur1.Next {
+		newNode := &ListNode{Val: cur1.Val}
+		cur.Next = newNode
+		cur = newNode
+	}
+	return dummy.Next
+}
+
+func reverse(head *ListNode) *ListNode {
+	dummy := &ListNode{-1, head}
+	pre := dummy
+	cur := head
+	for cur != nil && cur.Next != nil {
+		tmp := cur.Next
+		cur.Next = tmp.Next
+		tmp.Next = pre.Next
+		pre.Next = tmp
+	}
+	return dummy.Next
+}
+
+func isPalindrome(head *ListNode) bool {
+	if head == nil || head.Next == nil {
+		return true
+	}
+	copy := copy(head)
+	reverse := reverse(copy)
+	p1 := head
+	p2 := reverse
+	for p1 != nil && p2 != nil {
+		if p1.Val != p2.Val {
+			return false
+		}
+		p1 = p1.Next
+		p2 = p2.Next
+	}
+	return true
+}
+
+func isPalindrome1(head *ListNode) bool {
+	if head == nil || head.Next == nil {
+		return true
+	}
+	var nums []int
+	for cur := head; cur != nil; cur = cur.Next {
+		nums = append(nums, cur.Val)
+	}
+	length := len(nums)
+	for i := 0; i < length/2; i++ {
+		if nums[i] != nums[length-i-1] {
+			return false
+		}
+	}
+	return true
+}
+
+func main() {
+	var nums = []int{1, 2, 2, 1}
+	head := CreateLinkedList(nums)
+	PrintLinkedList(head)
+	fmt.Println(isPalindrome1(head))
 }
 ```
 

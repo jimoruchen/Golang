@@ -2,8 +2,6 @@ package main
 
 import (
 	"Golang/gorm/global"
-	"Golang/gorm/models"
-	"fmt"
 )
 
 func highQuery() {
@@ -44,9 +42,48 @@ func highQuery() {
 	//fmt.Println(user)
 
 	//Order
-	var user []models.UserModel
-	global.DB.Order("age desc").Order("id asc").Find(&user)
-	fmt.Println(user)
+	//var user []models.UserModel
+	//global.DB.Order("age desc").Order("id asc").Find(&user)
+	//fmt.Println(user)
+
+	//Scan 只需要特定字段
+	//var nameList []string
+	//var user models.UserModel
+	//global.DB.Model(user).Select("name").Scan(&nameList)
+	//global.DB.Model(models.UserModel{}).Select("name").Scan(&nameList)
+	//global.DB.Model(models.UserModel{}).Pluck("name", &nameList)
+	//fmt.Println(nameList)
+
+	//只需要几个特定的字段
+	//type User struct {
+	//	Name string
+	//	Age  int
+	//}
+	//type User struct {
+	//	Label string `gorm:"column:name"` //首字母必须大写
+	//	Value int    `gorm:"column:age"`
+	//}
+	//
+	//var userList []User
+	//global.DB.Model(models.UserModel{}).Scan(&userList)
+	//fmt.Println(userList)
+
+	//分组
+	//type User struct {
+	//	Age   int
+	//	Count int
+	//}
+	//var user []User
+	//global.DB.Model(models.UserModel{}).
+	//	Group("age").
+	//	Select("age, count(*) as count").
+	//	Scan(&user)
+	//fmt.Println(user)		//[{22 1} {23 1} {18 2} {17 1}]
+
+	//去重
+	//var ageList []int
+	//global.DB.Model(models.UserModel{}).Distinct("age").Pluck("age", &ageList)
+	//fmt.Println(ageList)
 
 }
 

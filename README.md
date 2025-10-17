@@ -506,6 +506,107 @@ func main() {
 
 <hr>
 
+## 142、环形链表 II
+### 题目
+给定一个链表的头节点  head ，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。
+
+* 示例1：
+>输入：head = [3,2,0,-4], pos = 1
+>输出：返回索引为 1 的链表节点
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func detectCycle(head *ListNode) *ListNode {
+	maps := make(map[*ListNode]struct{})
+	cur := head
+	for cur != nil {
+		if _, ok := maps[cur]; ok {
+			return cur
+		} else {
+			maps[cur] = struct{}{}
+			cur = cur.Next
+		}
+	}
+	return nil
+}
+
+func detectCycle1(head *ListNode) *ListNode {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			break
+		}
+	}
+	if fast == nil || fast.Next == nil {
+		return nil
+	}
+	slow = head
+	for slow != fast {
+		slow = slow.Next
+		fast = fast.Next
+	}
+	return slow
+}
+
+func detectCycle2(head *ListNode) *ListNode {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			slow = head
+			for slow != fast {
+				slow = slow.Next
+				fast = fast.Next
+			}
+			return slow
+		}
+	}
+	return nil
+}
+
+func CreateLinkedList(nums []int) *ListNode {
+	head := &ListNode{Val: nums[0]}
+	cur := head
+	for i := 1; i < len(nums); i++ {
+		cur.Next = &ListNode{Val: nums[i]}
+		cur = cur.Next
+	}
+	return head
+}
+
+func PrintLinkedList(head *ListNode) {
+	cur := head
+	for cur != nil {
+		fmt.Printf("%d->", cur.Val)
+		cur = cur.Next
+	}
+	fmt.Println("nil")
+}
+
+func main() {
+	head := &ListNode{Val: 1}
+	head.Next = &ListNode{Val: 2}
+	head.Next.Next = &ListNode{Val: 3}
+	head.Next.Next.Next = &ListNode{Val: 4}
+	head.Next.Next.Next.Next = head
+	fmt.Println(detectCycle(head).Val)
+}
+```
+
+<hr>
+
 ## 160、相交链表
 ### 题目
 给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 null 。

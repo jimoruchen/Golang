@@ -2,10 +2,31 @@ package main
 
 import (
 	"Golang/gorm/global"
+	"Golang/gorm/models"
+	"fmt"
+
+	"gorm.io/gorm"
 )
 
 func highQuery() {
 	global.DB = global.DB.Debug()
+
+	//批量插入
+	//userList := []models.UserModel{
+	//	{Name: "张三", Age: 20},
+	//	{Name: "李四", Age: 20},
+	//	{Name: "王五", Age: 18},
+	//	{Name: "Alex", Age: 18},
+	//	{Name: "Bob", Age: 21},
+	//}
+	//for _, user := range userList {
+	//	err := global.DB.Create(&user).Error
+	//	if err != nil {
+	//		fmt.Printf("create user err:%v\n", err)
+	//		continue
+	//	}
+	//	fmt.Printf("成功，user:%#v\n", user.Name)
+	//}
 
 	//var user models.UserModel
 	//global.DB.Where("age > ?", 18).Take(&user)
@@ -85,6 +106,50 @@ func highQuery() {
 	//global.DB.Model(models.UserModel{}).Distinct("age").Pluck("age", &ageList)
 	//fmt.Println(ageList)
 
+	//分页
+	//PaginateUsers(global.DB, 3, 2)
+
+	//Scope
+	//var users []models.UserModel
+	//global.DB.Scopes(Age18).Find(&users)
+	//fmt.Println(users)
+
+	//var users []models.UserModel
+	//global.DB.Scopes(NameIn("张三", "李四")).Find(&users)
+	//fmt.Println(users)
+
+	//原生SQL
+	type User struct {
+		Name string
+		Age  int
+	}
+	var user []User
+	global.DB.Raw("select name, age from user_models").Scan(&user)
+	fmt.Println(user)
+	global.DB.Exec("update user_models set age = 22 where id = 1")
+}
+
+func NameIn(NameList ...string) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Where("name in (?)", NameList)
+	}
+}
+
+func Age18(tx *gorm.DB) *gorm.DB {
+	return tx.Where("age > ?", 18)
+}
+
+func PaginateUsers(db *gorm.DB, pageNum, pageSize int) {
+	var users []models.UserModel
+	var count int64
+	db.Model(&models.UserModel{}).Count(&count)
+	offset := (pageNum - 1) * pageSize
+	err := db.Limit(pageSize).Offset(offset).Find(&users).Error
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("count: %d\n", count)
+	fmt.Printf("%#v\n", users)
 }
 
 func main() {

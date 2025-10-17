@@ -28,3 +28,8 @@ func (u UserModel) BeforeDelete(tx *gorm.DB) error {
 	fmt.Println("删除的钩子函数")
 	return nil
 }
+
+func (u *UserModel) AfterFind(tx *gorm.DB) (err error) {
+	fmt.Println("查询钩子")
+	return
+}

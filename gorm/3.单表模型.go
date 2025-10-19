@@ -2,19 +2,19 @@ package main
 
 import (
 	"Golang/gorm/global"
+	"Golang/gorm/models"
 	"fmt"
-	"time"
 )
 
-type UserModel struct {
-	ID        int    `gorm:"primary_key"`
-	Name      string `gorm:"size:16;not null;unique"`
-	Age       int    `gorm:"default:18"`
-	CreatedAt time.Time
-}
+//type UserModel struct {
+//	ID        int    `gorm:"primary_key"`
+//	Name      string `gorm:"size:16;not null;unique"`
+//	Age       int    `gorm:"default:18"`
+//	CreatedAt time.Time
+//}
 
 func migrate() {
-	err := global.DB.AutoMigrate(&UserModel{})
+	err := global.DB.AutoMigrate(&models.UserModel{})
 	if err != nil {
 		fmt.Println("表结构迁移失败", err)
 		return

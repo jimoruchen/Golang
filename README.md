@@ -153,6 +153,20 @@ func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
 	return dummy.Next
 }
 
+func mergeTwoLists1(list1 *ListNode, list2 *ListNode) *ListNode {
+	if list1 == nil {
+		return list2
+	} else if list2 == nil {
+		return list1
+	} else if list1.Val < list2.Val {
+		list1.Next = mergeTwoLists(list1.Next, list2)
+		return list1
+	} else {
+		list2.Next = mergeTwoLists(list2.Next, list1)
+		return list2
+	}
+}
+
 func CreatLinkList(nums []int) *ListNode {
 	if len(nums) == 0 {
 		return nil
@@ -220,6 +234,16 @@ func swapPairs(head *ListNode) *ListNode {
 		prev = first
 	}
 	return dummy.Next
+}
+
+func swapPairs1(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	tmp := head.Next
+	head.Next = swapPairs(tmp.Next)
+	tmp.Next = head
+	return tmp
 }
 
 func CreateLinkedList(nums []int) (head *ListNode) {
@@ -402,6 +426,65 @@ func main() {
 	PrintLinkedList(list)
 	list = reverseBetween(list, left, right)
 	PrintLinkedList(list)
+}
+```
+
+<hr>
+
+## 138、随机链表的复制
+### 题目
+给你一个长度为 n 的链表，每个节点包含一个额外增加的随机指针 random ，该指针可以指向链表中的任何节点或空节点。
+
+* 示例1：
+>输入：head = [[7,null],[13,0],[11,4],[10,2],[1,0]]
+>输出：[[7,null],[13,0],[11,4],[10,2],[1,0]]
+
+### 代码
+```go
+package main
+
+type Node struct {
+	Val    int
+	Next   *Node
+	Random *Node
+}
+
+func copyRandomList(head *Node) *Node {
+	maps := make(map[*Node]*Node)
+	cur := head
+	for cur != nil {
+		maps[cur] = &Node{Val: cur.Val}
+		cur = cur.Next
+	}
+	cur = head
+	for cur != nil {
+		newNode := maps[cur]
+		newNode.Next = maps[cur.Next]
+		newNode.Random = maps[cur.Random]
+		cur = cur.Next
+	}
+	return maps[head]
+}
+
+var maps map[*Node]*Node
+
+func deepCopy(head *Node) *Node {
+	if head == nil {
+		return nil
+	}
+	if n, ok := maps[head]; ok {
+		return n
+	}
+	newNode := &Node{Val: head.Val}
+	maps[head] = newNode
+	newNode.Next = deepCopy(head.Next)
+	newNode.Random = deepCopy(head.Random)
+	return newNode
+}
+
+func copyRandomList1(head *Node) *Node {
+	maps = make(map[*Node]*Node)
+	return deepCopy(head)
 }
 ```
 

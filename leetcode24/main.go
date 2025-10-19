@@ -21,6 +21,16 @@ func swapPairs(head *ListNode) *ListNode {
 	return dummy.Next
 }
 
+func swapPairs1(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	tmp := head.Next
+	head.Next = swapPairs(tmp.Next)
+	tmp.Next = head
+	return tmp
+}
+
 func CreateLinkedList(nums []int) (head *ListNode) {
 	if len(nums) == 0 {
 		return nil

@@ -8,10 +8,18 @@ import (
 )
 
 type UserModel struct {
-	ID        int    `gorm:"primary_key"`
-	Name      string `gorm:"size:16;not null;unique"`
-	Age       int    `gorm:"default:18;check:age > 0"`
-	CreatedAt time.Time
+	ID              int              `gorm:"primary_key"`
+	Name            string           `gorm:"size:16;not null;unique"`
+	Age             int              `gorm:"default:18;check:age > 0"`
+	UserDetailModel *UserDetailModel `gorm:"foreignkey:UserID"`
+	CreatedAt       time.Time
+}
+
+type UserDetailModel struct {
+	ID        int64
+	UserID    int64      `gorm:"unique"` //一对一关系需要加上唯一约束
+	UserModel *UserModel `gorm:"foreignKey:UserID"`
+	Email     string     `gorm:"size:64"`
 }
 
 func (u UserModel) BeforeCreate(tx *gorm.DB) error {

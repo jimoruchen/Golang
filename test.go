@@ -28,10 +28,13 @@ func ShellSort(nums []int) {
 			nums[j] = key
 		}
 	}
+
 }
 
 func main() {
 	var nums = []int{2, 1, 4, 3, 5}
+	InsertSort(nums)
+	fmt.Println(nums)
 	ShellSort(nums)
 	fmt.Println(nums)
 }

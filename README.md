@@ -359,6 +359,49 @@ func removeElement1(nums []int, val int) int {
 
 <hr>
 
+## 49、字母异位词分组
+### 题目
+给你一个字符串数组，请你将 字母异位词 组合在一起。可以按任意顺序返回结果列表。
+
+* 示例1：
+>输入：strs = ["eat", "tea", "tan", "ate", "nat", "bat"]
+>输出：[["bat"],["nat","tan"],["ate","eat","tea"]]
+
+### 代码
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func groupAnagrams(strs []string) [][]string {
+	maps := make(map[string][]string)
+	for _, str := range strs {
+		chars := []byte(str)
+		sort.Slice(chars, func(i, j int) bool {
+			return chars[i] < chars[j]
+		})
+		sortStr := string(chars)
+		maps[sortStr] = append(maps[sortStr], str)
+	}
+	var ans [][]string
+	for _, v := range maps {
+		ans = append(ans, v)
+	}
+	return ans
+}
+
+func main() {
+	strs := []string{"eat", "tea", "tan", "ate", "nat", "bat"}
+	ans := groupAnagrams(strs)
+	fmt.Println(ans)
+}
+```
+
+<hr>
+
 ## 92、反转链表 II
 ### 题目
 给你单链表的头指针 head 和两个整数 left 和 right ，其中 left <= right 。请你反转从位置 left 到位置 right 的链表节点，返回 反转后的链表 。

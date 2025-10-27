@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func SelectionSort(nums []int) {
+func selectionSort(nums []int) {
 	length := len(nums)
 	for i := 0; i < length; i++ {
 		for j := i + 1; j < length; j++ {
@@ -13,7 +13,7 @@ func SelectionSort(nums []int) {
 	}
 }
 
-func SelectionSort1(nums []int) {
+func selectionSort1(nums []int) {
 	length := len(nums)
 	for i := 0; i < length; i++ {
 		minIndex := i
@@ -28,6 +28,6 @@ func SelectionSort1(nums []int) {
 
 func main() {
 	nums := []int{2, 1, 4, 3, 5}
-	SelectionSort1(nums)
+	selectionSort1(nums)
 	fmt.Println(nums)
 }

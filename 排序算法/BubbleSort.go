@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func BubbleSort(nums []int) {
+func bubbleSort(nums []int) {
 	length := len(nums)
 	for i := 0; i < length; i++ {
 		swapped := false
@@ -20,6 +20,6 @@ func BubbleSort(nums []int) {
 
 func main() {
 	nums := []int{2, 1, 4, 3, 5}
-	BubbleSort(nums)
+	bubbleSort(nums)
 	fmt.Println(nums)
 }

@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func InsertSort(nums []int) {
+func insertSort(nums []int) {
 	length := len(nums)
 	for i := 1; i < length; i++ {
 		key := nums[i]
@@ -15,7 +15,7 @@ func InsertSort(nums []int) {
 	}
 }
 
-func ShellSort(nums []int) {
+func shellSort(nums []int) {
 	length := len(nums)
 	for gap := length / 2; gap > 0; gap /= 2 {
 		for i := gap; i < length; i++ {
@@ -33,8 +33,8 @@ func ShellSort(nums []int) {
 
 func main() {
 	var nums = []int{2, 1, 4, 3, 5}
-	InsertSort(nums)
+	insertSort(nums)
 	fmt.Println(nums)
-	ShellSort(nums)
+	shellSort(nums)
 	fmt.Println(nums)
 }

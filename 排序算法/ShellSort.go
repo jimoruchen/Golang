@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func ShellSort(nums []int) {
+func shellSort(nums []int) {
 	length := len(nums)
 	for gap := length / 2; gap > 0; gap /= 2 {
 		for i := gap; i < length; i++ {
@@ -19,6 +19,6 @@ func ShellSort(nums []int) {
 
 func main() {
 	nums := []int{2, 1, 4, 3, 5}
-	ShellSort(nums)
+	shellSort(nums)
 	fmt.Println(nums)
 }

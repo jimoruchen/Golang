@@ -12,7 +12,16 @@ import (
 var DB *gorm.DB
 
 func Migrate() {
-	err := DB.AutoMigrate(&models.UserModel{}, &models.UserDetailModel{}, &models.ClassModel{}, &models.StudentModel{})
+	err := DB.AutoMigrate(
+		&models.UserModel{},
+		&models.UserDetailModel{},
+		&models.ClassModel{},
+		&models.StudentModel{},
+		&models.ArticleModel{},
+		&models.TagModel{},
+		&models.User1Model{},
+		&models.Article1Model{},
+		&models.User2ArticleModel{})
 	if err != nil {
 		log.Fatalf("数据库迁移失败 %s", err)
 	}
@@ -20,7 +29,7 @@ func Migrate() {
 }
 
 func Connect() {
-	dsn := "root:200088@tcp(127.0.0.1:3306)/gorm_db?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:200088@tcp(127.0.0.1:3303)/gorm_db?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true, // 不生成实体外键
 	})

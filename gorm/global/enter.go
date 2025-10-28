@@ -22,7 +22,8 @@ func Migrate() {
 		&models.User1Model{},
 		&models.Article1Model{},
 		&models.User2ArticleModel{},
-		&models.UserZdy{})
+		&models.UserZdy{},
+		&models.LogModel{})
 	if err != nil {
 		log.Fatalf("数据库迁移失败 %s", err)
 	}

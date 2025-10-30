@@ -44,6 +44,49 @@ func twoSum(nums []int, target int) []int {
 
 <hr>
 
+## 3、无重复字符的最长子串
+### 题目
+给定一个字符串 s ，请你找出其中不含有重复字符的 最长子串的长度。
+
+* 示例1：
+>输入：s = "abcabcbb"
+>输出：3
+>解释：因为无重复字符的最长子串是 "abc"，所以其长度为 3。注意 "bca" 和 "cab" 也是正确答案。
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+func lengthOfLongestSubstring(s string) int {
+	maps := make(map[byte]struct{})
+	left := 0
+	count := 0
+	for right := 0; right < len(s); right++ {
+		for {
+			if _, ok := maps[s[right]]; ok {
+				delete(maps, s[left])
+				left++
+			} else {
+				break
+			}
+		}
+		maps[s[right]] = struct{}{}
+		count = max(count, right-left+1)
+	}
+	return count
+}
+
+func main() {
+	s := "abcabcbb"
+	res := lengthOfLongestSubstring(s)
+	fmt.Println(res)
+}
+```
+
+<hr>
+
 ## 19、删除链表的倒数第 N 个结点
 ### 题目
 给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。

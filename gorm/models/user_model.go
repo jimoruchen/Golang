@@ -11,6 +11,7 @@ type UserModel struct {
 	ID              int              `gorm:"primary_key"`
 	Name            string           `gorm:"size:16;not null;unique"`
 	Age             int              `gorm:"default:18;check:age > 0"`
+	Money           int              `json:"money"`
 	UserDetailModel *UserDetailModel `gorm:"foreignkey:UserID"` //去 user_detail_models 表里找 UserID = UserModel.ID 的记录。
 	//当我从 UserModel 查找它的 UserDetailModel 时，请使用 UserDetailModel 这个表中的 UserID 字段，去匹配当前 UserModel 的主键（ID）。
 	CreatedAt time.Time

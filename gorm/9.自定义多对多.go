@@ -2,14 +2,13 @@ package main
 
 import (
 	"Golang/gorm/global"
-	"Golang/gorm/models"
 )
 
 func UserManyToMany() {
 	//创建用户连带创建文章
 	//global.DB.SetupJoinTable(&models.User1Model{}, "CollArticleList", &models.User2ArticleModel{})
 	//err := global.DB.Create(&models.User1Model{
-	//	Name: "李四",
+	//	Name: "张三",
 	//	CollArticleList: []models.Article1Model{
 	//		{Title: "Python"},
 	//		{Title: "JS"},
@@ -55,9 +54,9 @@ func UserManyToMany() {
 	//fmt.Println(collList)
 
 	//用户取消收藏，清空关联关系
-	var user models.User1Model
-	global.DB.Take(&user, "id=?", 6)
-	global.DB.Model(&user).Association("CollArticleList").Clear()
+	//var user models.User1Model
+	//global.DB.Take(&user, "id=?", 6)
+	//global.DB.Model(&user).Association("CollArticleList").Clear()
 }
 
 func main() {

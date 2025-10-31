@@ -53,3 +53,9 @@ sort.Slice(people, func(i, j int) bool {
     return people[i].Name < people[j].Name // 年龄相同时按名字升序
 })
 ```
+
+## 判断map为空
+直接判断`len(maps) == 0`
+
+## 去除map所有元素
+直接重新构建map，`maps = make(map[int]int)`

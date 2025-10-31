@@ -605,6 +605,54 @@ func main() {
 
 ### 1对1关系
 ```go
+package models
+
+import (
+	"fmt"
+	"time"
+
+	"gorm.io/gorm"
+)
+
+type UserModel struct {
+	ID              int              `gorm:"primary_key"`
+	Name            string           `gorm:"size:16;not null;unique"`
+	Age             int              `gorm:"default:18;check:age > 0"`
+	Money           int              `json:"money"`
+	UserDetailModel *UserDetailModel `gorm:"foreignkey:UserID"` //去 user_detail_models 表里找 UserID = UserModel.ID 的记录。
+	//当我从 UserModel 查找它的 UserDetailModel 时，请使用 UserDetailModel 这个表中的 UserID 字段，去匹配当前 UserModel 的主键（ID）。
+	CreatedAt time.Time
+}
+
+type UserDetailModel struct {
+	ID        int64
+	UserID    int64      `gorm:"unique"`            //一对一关系需要加上唯一约束
+	UserModel *UserModel `gorm:"foreignKey:UserID"` //UserDetailModel 的 UserID 字段是外键，引用 UserModel.ID。
+	// UserModel 这个关联对象，是通过当前表（user_detail_models）的 UserID 字段来查找的。
+	Email string `gorm:"size:64"`
+}
+
+func (u UserModel) BeforeCreate(tx *gorm.DB) error {
+	fmt.Println("创建的钩子函数")
+	return nil
+}
+
+func (u UserModel) BeforeUpdate(tx *gorm.DB) error {
+	fmt.Println("更新的钩子函数")
+	return nil
+}
+
+func (u UserModel) BeforeDelete(tx *gorm.DB) error {
+	fmt.Println("删除的钩子函数")
+	return nil
+}
+
+func (u *UserModel) AfterFind(tx *gorm.DB) (err error) {
+	fmt.Println("查询钩子")
+	return
+}
+```
+```go
 package main
 
 import (
@@ -668,6 +716,22 @@ func main() {
 ```
 
 ### 1对多关系
+```go
+package models
+
+type ClassModel struct {
+	ID          int
+	Name        string         `gorm:"size:12"`
+	StudentList []StudentModel `gorm:"foreignkey:ClassID"`
+}
+
+type StudentModel struct {
+	ID         int
+	Name       string `gorm:"size:12"`
+	ClassID    int
+	ClassModel *ClassModel `gorm:"foreignkey:ClassID"`
+}
+```
 ```go
 package main
 
@@ -762,5 +826,398 @@ func main() {
 	global.Connect()
 	//global.Migrate()
 	oneToMany()
+}
+```
+
+### 多对多关系
+```go
+package models
+
+type ArticleModel struct {
+	ID      int
+	Title   string     `gorm:"size:32"`
+	TagList []TagModel `gorm:"many2many:article_tags;"`
+}
+
+type TagModel struct {
+	ID          int
+	Title       string         `gorm:"size:32"`
+	ArticleList []ArticleModel `gorm:"many2many:article_tags;"`
+}
+```
+```go
+package main
+
+import (
+	"Golang/gorm/global"
+	"Golang/gorm/models"
+)
+
+func ManyToMany() {
+	//创建一篇文章，新增Tag
+	//err := global.DB.Create(&models.ArticleModel{
+	//	Title: "AAA",
+	//	TagList: []models.TagModel{
+	//		{Title: "111"},
+	//		{Title: "222"},
+	//	},
+	//}).Error
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+
+	//创建一篇文章，选择Tag
+	//var TagList []models.TagModel
+	//TagIDList := []int{1, 2}
+	//global.DB.Find(&TagList, "id in ?", TagIDList)
+	//global.DB.Create(&models.ArticleModel{
+	//	Title:   "BBB",
+	//	TagList: TagList,
+	//})
+
+	//查文章时把对应的标签带出来
+	//var article models.ArticleModel
+	//global.DB.Preload("TagList").Find(&article, 1)
+	//fmt.Println(article)
+
+	//将文章2的标签更新为1和2
+	var article models.ArticleModel
+	global.DB.Find(&article, 2)
+	global.DB.Model(&article).Association("TagList").Replace([]models.TagModel{
+		{ID: 1},
+		{ID: 2},
+	})
+	//global.DB.Model(&article).Association("TagList").Append([]models.TagModel{
+	//	{ID: 2},
+	//})
+}
+
+func main() {
+	global.Connect()
+	//global.Migrate()
+	ManyToMany()
+}
+```
+
+### 自定义多对多关系
+```go
+package models
+
+import (
+	"fmt"
+	"time"
+
+	"gorm.io/gorm"
+)
+
+type User1Model struct {
+	ID              int64
+	Name            string
+	CollArticleList []Article1Model `gorm:"many2many:user2_article_models;joinForeignKey:UserID;JoinReferences:ArticleID"`
+}
+type Article1Model struct {
+	ID    int64
+	Title string `gorm:"size:32"`
+}
+type User2ArticleModel struct {
+	UserID       int64         `gorm:"primaryKey"`
+	UserModel    User1Model    `gorm:"foreignKey:UserID"` //使用 UserID 字段作为外键，关联到 User1Model.ID
+	ArticleID    int64         `gorm:"primaryKey"`
+	ArticleModel Article1Model `gorm:"foreignKey:ArticleID"`
+	CreatedAt    time.Time     `json:"createdAt"`
+	Title        string        `gorm:"size:32" json:"title"`
+}
+
+func (u *User2ArticleModel) BeforeCreate(tx *gorm.DB) error {
+	var articleTitle string
+	tx.Model(&Article1Model{}).Where("id = ?", u.ArticleID).Select("title").Scan(&articleTitle)
+	u.Title = articleTitle
+	fmt.Println("创建的钩子函数", u.ArticleID, u.Title)
+	return nil
+}
+
+func (User2ArticleModel) TableName() string {
+	return "user2_article_models"
+}
+```
+```go
+package main
+
+import (
+	"Golang/gorm/global"
+)
+
+func UserManyToMany() {
+	//创建用户连带创建文章
+	//global.DB.SetupJoinTable(&models.User1Model{}, "CollArticleList", &models.User2ArticleModel{})
+	//err := global.DB.Create(&models.User1Model{
+	//	Name: "张三",
+	//	CollArticleList: []models.Article1Model{
+	//		{Title: "Python"},
+	//		{Title: "JS"},
+	//	},
+	//}).Error
+	//err := global.DB.Create(&models.User1Model{
+	//	Name: "xxx",
+	//	CollArticleList: []models.Article1Model{
+	//		{ID: 1},
+	//		{ID: 2},
+	//	},
+	//}).Error
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+
+	//查某个用户他收藏的文章
+	//var userID = 1
+	//var userArticleList []models.User2ArticleModel
+	//global.DB.Preload("UserModel").Preload("ArticleModel").Find(&userArticleList, "user_id = ?", userID)
+	//fmt.Println(userArticleList)
+
+	//type UserCollArticleResponse struct {
+	//	Name         string
+	//	UserID       int64
+	//	ArticleID    int64
+	//	ArticleTitle string
+	//	Date         time.Time
+	//}
+	//var userID = 1
+	//var userArticleList []models.User2ArticleModel
+	//var collList []UserCollArticleResponse
+	//global.DB.Preload("UserModel").Preload("ArticleModel").Find(&userArticleList, "user_id = ?", userID)
+	//for _, userArticle := range userArticleList {
+	//	collList = append(collList, UserCollArticleResponse{
+	//		Name:         userArticle.UserModel.Name,
+	//		UserID:       userArticle.UserID,
+	//		ArticleID:    userArticle.ArticleID,
+	//		ArticleTitle: userArticle.ArticleModel.Title,
+	//		Date:         userArticle.CreatedAt,
+	//	})
+	//}
+	//fmt.Println(collList)
+
+	//用户取消收藏，清空关联关系
+	//var user models.User1Model
+	//global.DB.Take(&user, "id=?", 6)
+	//global.DB.Model(&user).Association("CollArticleList").Clear()
+}
+
+func main() {
+	global.Connect()
+	//global.Migrate()
+	UserManyToMany()
+}
+```
+
+### 自定义数据类型
+```go
+package models
+
+import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
+	"fmt"
+)
+
+type UserInfo struct {
+	Likes []string `json:"likes"`
+}
+
+// Scan 实现 sql.Scanner 接口，Scan 将 value 扫描至 Json
+func (j *UserInfo) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", value))
+	}
+
+	result := UserInfo{}
+	err := json.Unmarshal(bytes, &result)
+	*j = result
+	return err
+}
+
+// Value 实现 driver.Valuer 接口，Value 返回 json value
+func (j UserInfo) Value() (driver.Value, error) {
+	return json.Marshal(j)
+}
+
+type Card struct {
+	Card []string `json:"card"`
+}
+
+type UserZdy struct {
+	ID       uint
+	Name     string   `gorm:"size:32"`
+	Info     UserInfo `gorm:"type:longtext" json:"info"`
+	CardInfo Card     `gorm:"type:longtext;serializer:json" json:"card_info"`
+}
+```
+```go
+package main
+
+import (
+	"Golang/gorm/global"
+	"Golang/gorm/models"
+	"fmt"
+)
+
+func UserZdy() {
+	//创建
+	//err := global.DB.Create(&models.UserZdy{
+	//	Name: "张三",
+	//	Info: models.UserInfo{
+	//		Likes: []string{"唱", "跳", "rap"},
+	//	},
+	//}).Error
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+
+	//查询
+	//var userZdy models.UserZdy
+	//global.DB.Take(&userZdy)
+	//fmt.Println(userZdy, userZdy.Info.Likes)
+
+	//创建
+	//err := global.DB.Create(&models.UserZdy{
+	//	Name: "张三",
+	//	Info: models.UserInfo{
+	//		Likes: []string{"唱", "跳", "rap"},
+	//	},
+	//	CardInfo: models.Card{
+	//		Card: []string{"法拉利", "兰博基尼"},
+	//	},
+	//}).Error
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+
+	//查询
+	var userZdy models.UserZdy
+	global.DB.Last(&userZdy)
+	fmt.Println(userZdy, userZdy.Info.Likes, userZdy.CardInfo.Card)
+}
+
+func main() {
+	global.Connect()
+	//global.Migrate()
+	UserZdy()
+}
+```
+
+### 枚举类型
+```go
+package main
+
+import (
+	"Golang/gorm/global"
+	"Golang/gorm/models"
+	"encoding/json"
+	"fmt"
+)
+
+func test() {
+	//global.DB.Create(&models.LogModel{
+	//	Title: "用户注册",
+	//	Level: models.InfoLevel,
+	//})
+
+	var log models.LogModel
+	global.DB.Take(&log)
+	byteData, _ := json.Marshal(log)
+	fmt.Println(string(byteData))
+}
+
+func main() {
+	global.Connect()
+	//global.Migrate()
+	test()
+}
+```
+```go
+package models
+
+import "encoding/json"
+
+type Level int8
+
+const (
+	InfoLevel    Level = 1
+	WarningLevel Level = 2
+	ErrorLevel   Level = 3
+)
+
+func (s Level) MarshalJSON() ([]byte, error) {
+	var str string
+	switch s {
+	case InfoLevel:
+		str = "info"
+	case WarningLevel:
+		str = "warning"
+	case ErrorLevel:
+		str = "error"
+	}
+	//return json.Marshal(str)
+	return json.Marshal(map[string]any{
+		"value": int8(s),
+		"label": str,
+	})
+}
+
+type LogModel struct {
+	ID    uint   `json:"id"`
+	Title string `gorm:"size:32"`
+	Level Level  `json:"level"`
+}
+```
+
+### 事务
+```go
+package main
+
+import (
+	"Golang/gorm/global"
+	"Golang/gorm/models"
+
+	"gorm.io/gorm"
+)
+
+func test1() {
+	var zhangsan = models.UserModel{ID: 1}
+	var lisi = models.UserModel{ID: 2}
+	global.DB.Transaction(func(tx *gorm.DB) error {
+		err := tx.Model(&zhangsan).Update("money", gorm.Expr("money - ?", 100)).Error
+		if err != nil {
+			return err
+		}
+		err = tx.Model(&lisi).Update("money", gorm.Expr("money + ?", 100)).Error
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
+func test2() {
+	var zhangsan = models.UserModel{ID: 1}
+	var lisi = models.UserModel{ID: 2}
+	tx := global.DB.Begin()
+	err := tx.Model(&zhangsan).Update("money", gorm.Expr("money - ?", 100)).Error
+	//err = errors.New("出错了")
+	if err != nil {
+		tx.Rollback()
+	}
+	err = tx.Model(&lisi).Update("money", gorm.Expr("money + ?", 100)).Error
+	if err != nil {
+		tx.Rollback()
+	}
+	tx.Commit()
+}
+
+func main() {
+	global.Connect()
+	//global.Migrate()
+	test2()
 }
 ```

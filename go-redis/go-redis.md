@@ -2,6 +2,25 @@
 
 ## g0-redis
 
+## docker安装Redis
+
+### 拉取 Redis 镜像
+`docker pull redis`
+
+### 运行 Redis 容器
+`docker run --name my-redis -d -p 6379:6379 ^
+-v D:/my-redis:/data ^
+redis redis-server --requirepass 123456 --appendonly yes`
+
+### 验证是否运行成功
+`docker ps`
+
+### 使用 redis-cli 连接测试
+`docker exec -it my-redis redis-cli`
+`auth 123456`
+
+<hr>
+
 ### 连接redis
 ```go
 package main
@@ -395,8 +414,7 @@ sorted set 增加了一个权重参数 score，使得集合中的元素能够按
 
 ### 通过go操作五大数据类型
 
-#### String
-```shell
+```go
 package main
 
 import (
@@ -411,7 +429,7 @@ var DB *redis.Client
 func RedisClient() {
 	client := redis.NewClient(&redis.Options{
 		Addr:        "localhost:6379",
-		Password:    "",
+		Password:    "123456",
 		DB:          0,
 		DialTimeout: 1 * time.Second,
 	})
@@ -456,12 +474,136 @@ func RedisString1() {
 	fmt.Println(DB.TTL("name")) //-2s
 }
 
+func RedisList() {
+	DB.RPush("list", "zhangsan", "lisi", "wangwu", "xiaoming")
+	fmt.Println(DB.LLen("list"))
+	fmt.Println(DB.LRange("list", 0, -1).Val())
+}
+
+func RedisHash() {
+	DB.HSet("info", "name", "zhangsan")
+	DB.HSet("info", "age", 18)
+	fmt.Println(DB.HGet("info", "name").Val())   //zhangsan
+	fmt.Println(DB.HGet("info", "age").Val())    //18
+	fmt.Println(DB.HGetAll("info").Val())        //map[age:18 name:zhangsan]
+	fmt.Println(DB.HKeys("info").Val())          //[name age]
+	fmt.Println(DB.HLen("info").Val())           //2
+	fmt.Println(DB.HDel("info", "name").Val())   //1
+	fmt.Println(DB.HKeys("info").Val())          //[age]
+	fmt.Println(DB.HExists("info", "age").Val()) //true
+}
+
+func RedisSet() {
+	DB.SAdd("set", "a", "b", "c", "d")
+	fmt.Println(DB.SIsMember("set", "a").Val()) //true
+	fmt.Println(DB.SMembers("set").Val())       //[a b c d]
+	fmt.Println(DB.SRem("set", "d").Val())      //1
+	fmt.Println(DB.SCard("set").Val())          //3
+
+	DB.SAdd("set1", 1, 2, 3)
+	DB.SAdd("set2", 2, 3, 4)
+	fmt.Println(DB.SDiff("set1", "set2").Val())  //[1]
+	fmt.Println(DB.SInter("set1", "set2").Val()) //[2 3]
+	fmt.Println(DB.SUnion("set1", "set2").Val()) //[1 2 3 4]
+}
+
+func RedisZset() {
+	DB.ZAdd("class", redis.Z{Score: 80, Member: "zhangsan"}, redis.Z{Score: 40, Member: "lisi"}, redis.Z{Score: 30, Member: "wangwu"})
+	fmt.Println(DB.ZCard("class").Val())                                               //3
+	fmt.Println(DB.ZRange("class", 0, -1).Val())                                       //[wangwu lisi zhangsan]
+	fmt.Println(DB.ZScore("class", "lisi").Val())                                      //40
+	fmt.Println(DB.ZRank("class", "zhangsan").Val())                                   //2
+	fmt.Println(DB.ZCount("class", "20", "50").Val())                                  //2
+	fmt.Println(DB.ZRangeByScore("class", redis.ZRangeBy{Min: "20", Max: "50"}).Val()) //[wangwu lisi]
+	fmt.Println(DB.ZRevRangeWithScores("class", 0, -1).Val())                          //[{80 zhangsan} {40 lisi} {30 wangwu}]
+}
+
 func main() {
 	RedisClient()
-	RedisString1()
+	//RedisString()
+	//RedisString1()
+	//RedisList()
+	//RedisHash()
+	//RedisSet()
+	RedisZset()
 }
 ```
 
 <hr>
 
-#### 
+### redis常用命令
+
+```shell
+C:\Users\10078>docker exec -it my-redis redis-cli
+127.0.0.1:6379> auth 123456
+OK
+127.0.0.1:6379> select 1
+OK
+127.0.0.1:6379[1]> select 0
+OK
+127.0.0.1:6379> keys *
+1) "class"
+2) "set1"
+3) "set2"
+4) "info"
+5) "set"
+6) "list"
+127.0.0.1:6379> keys s*
+1) "set1"
+2) "set2"
+3) "set"
+127.0.0.1:6379> ping
+PONG
+127.0.0.1:6379> move class 1
+(integer) 1
+127.0.0.1:6379> select 1
+OK
+127.0.0.1:6379[1]> keys *
+1) "class"
+127.0.0.1:6379[1]> type class
+zset
+127.0.0.1:6379[1]> select 0
+OK
+127.0.0.1:6379> setex name 20 xxx
+OK
+127.0.0.1:6379> ttl name
+(integer) 17
+127.0.0.1:6379> persist name    # 移除key的过期时间，key永不过期
+(integer) 1
+127.0.0.1:6379> ttl name
+(integer) -1
+127.0.0.1:6379> client list     # 获取连接到服务器的客户端连接列表
+id=10 addr=127.0.0.1:42738 laddr=127.0.0.1:6379 fd=25 name= age=7097 
+idle=7072 flags=N db=0 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 
+qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 
+tot-mem=1920 events=r cmd=get user=default redir=-1 resp=2 lib-name= 
+lib-ver= io-thread=0 tot-net-in=142 tot-net-out=146 tot-cmds=2
+127.0.0.1:6379> dbsize          # 获取当前数据库key的数量
+(integer) 6
+127.0.0.1:6379> select 1  
+OK
+127.0.0.1:6379[1]> dbsize
+(integer) 1
+127.0.0.1:6379[1]> flushdb      # 删除当前数据库的所有key
+OK
+127.0.0.1:6379[1]> dbsize
+(integer) 0
+127.0.0.1:6379[1]> FLUSHALL     # 删除全部数据库的所有key
+OK
+```
+
+<hr>
+
+### 事务
+
+Redis 事务的本质是一组命令的集合。事务支持一次执行多个命令，一个事务中所有命令都会被序列化。在事务执行过程，会按照顺序串行化执行队列中的命令，其他客户端提交的命令请求不会插入到事务执行命令序列中。
+
+因为我们的程序是并发的，你在一个程序里面设置值，然后取值，这很正常
+
+但是如果并发存在，那么肯定就会存在，取值的时候不是我自己设置的那个值
+
+基于上面的问题，那我在一个客户端操作的时候，把所有的指令一次性按照顺序排他的放在一个队列中，执行完了之后再让其他的客户端操作
+
+```shell
+
+```

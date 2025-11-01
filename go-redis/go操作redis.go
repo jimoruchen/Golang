@@ -101,6 +101,48 @@ func RedisZset() {
 	fmt.Println(DB.ZRevRangeWithScores("class", 0, -1).Val())                          //[{80 zhangsan} {40 lisi} {30 wangwu}]
 }
 
+func RedisPipeLine() {
+	DB.Pipelined(func(tx redis.Pipeliner) error {
+		tx.Set("age", 18, 0)
+		return nil
+	})
+	fmt.Println(DB.Get("age").Int())
+}
+
+func RedisPipeLine1() {
+	tx := DB.Pipeline()
+	// 添加命令到管道
+	tx.Set("age", 18, 0)
+	getCmd := tx.Get("age")
+	// 执行管道
+	_, err := tx.Exec()
+	if err != nil {
+		fmt.Println("执行失败:", err)
+		return
+	}
+	if age, err := getCmd.Result(); err == nil {
+		fmt.Println("age的值:", age) // 输出: age的值: 18
+	} else {
+		fmt.Println("获取失败:", err)
+	}
+}
+
+func RedisWatch() {
+	DB.Watch(func(tx *redis.Tx) error {
+		_, err := tx.Pipelined(func(pipe redis.Pipeliner) error {
+			time.Sleep(5 * time.Second)
+			pipe.Set("age", 19, 0)
+			return nil
+		})
+		if err != nil {
+			fmt.Println("事务不成功")
+			return err
+		}
+		fmt.Println(tx.Get("age").Int())
+		return nil
+	}, "age")
+}
+
 func main() {
 	RedisClient()
 	//RedisString()
@@ -108,5 +150,8 @@ func main() {
 	//RedisList()
 	//RedisHash()
 	//RedisSet()
-	RedisZset()
+	//RedisZset()
+	//RedisPipeLine()
+	//RedisPipeLine1()
+	RedisWatch()
 }

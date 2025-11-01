@@ -582,7 +582,7 @@ lib-ver= io-thread=0 tot-net-in=142 tot-net-out=146 tot-cmds=2
 (integer) 6
 127.0.0.1:6379> select 1  
 OK
-127.0.0.1:6379[1]> dbsize
+127.0.0.1:6379[1]> dbsize       # 获取当前数据库key的数量
 (integer) 1
 127.0.0.1:6379[1]> flushdb      # 删除当前数据库的所有key
 OK
@@ -596,14 +596,288 @@ OK
 
 ### 事务
 
-Redis 事务的本质是一组命令的集合。事务支持一次执行多个命令，一个事务中所有命令都会被序列化。在事务执行过程，会按照顺序串行化执行队列中的命令，其他客户端提交的命令请求不会插入到事务执行命令序列中。
-
+Redis 事务的本质是一组命令的集合。事务支持一次执行多个命令，一个事务中所有命令都会被序列化。
+在事务执行过程，会按照顺序串行化执行队列中的命令，其他客户端提交的命令请求不会插入到事务执行命令序列中。
 因为我们的程序是并发的，你在一个程序里面设置值，然后取值，这很正常
-
 但是如果并发存在，那么肯定就会存在，取值的时候不是我自己设置的那个值
-
 基于上面的问题，那我在一个客户端操作的时候，把所有的指令一次性按照顺序排他的放在一个队列中，执行完了之后再让其他的客户端操作
 
-```shell
+实际上在Redis中也会出现多个命令同时竞争同一个数据的情况，比如现在有两条命令同时执行，他们都要去修改a的值，那么这个时候就只能动用锁机制来保证同一时间只能有一个命令操作。
 
+虽然Redis中也有锁机制，但是它是一种乐观锁，不同于MySQL，我们在MySQL中认识的锁是悲观锁，那么什么是乐观锁什么是悲观锁呢？
+
+悲观锁：时刻认为别人会来抢占资源，禁止一切外来访问，直到释放锁，具有强烈的排他性质。
+乐观锁：并不认为会有人来抢占资源，所以会直接对数据进行操作，在操作时再去验证是否有其他人抢占资源。
+Redis中可以使用watch来监视一个目标，如果执行事务之前被监视目标发生了修改，则取消本次事务：
+
+1. MULTI —— 开启事务
+标记一个事务块的开始。
+2. EXEC —— 执行事务
+   执行所有在 MULTI 和 EXEC 之间的命令。
+3. DISCARD —— 取消事务
+   放弃事务，不执行任何命令。
+4. WATCH —— 监视键
+   乐观锁机制：如果被监视的键在事务执行前被修改，则整个事务不会执行。
+
+A
+```shell
+127.0.0.1:6379> multi
+OK
+127.0.0.1:6379(TX)> set a 100
+QUEUED
+127.0.0.1:6379(TX)> get a
+QUEUED
+127.0.0.1:6379(TX)> exec
+1) OK
+2) "100"
+127.0.0.1:6379> get a
+"100"
 ```
+B
+```shell
+127.0.0.1:6379> set a 10000
+OK
+127.0.0.1:6379> get a
+"100"
+```
+
+A
+```shell
+127.0.0.1:6379> watch a
+OK
+127.0.0.1:6379> multi
+OK
+127.0.0.1:6379(TX)> set a 200
+QUEUED
+127.0.0.1:6379(TX)> exec
+(nil)
+```
+B
+```shell
+127.0.0.1:6379> get a
+"100"
+127.0.0.1:6379> set a 300
+OK
+```
+
+A
+```shell
+127.0.0.1:6379> watch a
+OK
+127.0.0.1:6379> multi
+OK
+127.0.0.1:6379(TX)> set a 100
+QUEUED
+127.0.0.1:6379(TX)> exec
+(nil)
+127.0.0.1:6379> unwatch
+```
+B
+```shell
+127.0.0.1:6379> set a 200
+OK
+127.0.0.1:6379> set a 100
+OK
+```
+ABA问题
+
+```shell
+127.0.0.1:6379> set age 20
+OK
+```
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/go-redis/redis"
+)
+
+var DB *redis.Client
+
+func RedisClient() {
+	client := redis.NewClient(&redis.Options{
+		Addr:        "localhost:6379",
+		Password:    "123456",
+		DB:          0,
+		DialTimeout: 1 * time.Second,
+	})
+	err := client.Ping().Err()
+	if err != nil {
+		panic("redis连接失败")
+	}
+	DB = client
+}
+
+func RedisString() {
+	DB.Set("name", "xxx", 0)
+	stringCmd := DB.Get("name")
+	fmt.Println(stringCmd.Val()) //字符串
+	fmt.Println(stringCmd.Result())
+	fmt.Println(stringCmd.Int()) //数字
+	fmt.Println(stringCmd.Err())
+}
+
+func RedisString1() {
+	DB.Set("name", "xxx", 0)
+	DB.Set("age", 18, 0)
+	fmt.Println(DB.Get("name").Val()) //xxx
+	fmt.Println(DB.Get("age").Int())  //18 <nil>
+
+	fmt.Println(DB.Exists("name").Val())   //1
+	fmt.Println(DB.Incr("age").Val())      //19
+	fmt.Println(DB.IncrBy("age", 1).Val()) //20
+	fmt.Println(DB.Decr("age").Val())      //19
+	fmt.Println(DB.DecrBy("age", 1).Val()) //18
+	fmt.Println(DB.Del("age").Val())       //1
+
+	fmt.Println(DB.TTL("name")) //-1s
+	DB.Set("name", "yyy", 5*time.Second)
+	fmt.Println(DB.TTL("name")) //5s
+	time.Sleep(5 * time.Second)
+	fmt.Println(DB.TTL("name")) //-2s
+
+	DB.Set("name", "zzz", 0)
+	DB.Expire("name", 2*time.Second)
+	time.Sleep(2 * time.Second)
+	fmt.Println(DB.TTL("name")) //-2s
+}
+
+func RedisList() {
+	DB.RPush("list", "zhangsan", "lisi", "wangwu", "xiaoming")
+	fmt.Println(DB.LLen("list"))
+	fmt.Println(DB.LRange("list", 0, -1).Val())
+}
+
+func RedisHash() {
+	DB.HSet("info", "name", "zhangsan")
+	DB.HSet("info", "age", 18)
+	fmt.Println(DB.HGet("info", "name").Val())   //zhangsan
+	fmt.Println(DB.HGet("info", "age").Val())    //18
+	fmt.Println(DB.HGetAll("info").Val())        //map[age:18 name:zhangsan]
+	fmt.Println(DB.HKeys("info").Val())          //[name age]
+	fmt.Println(DB.HLen("info").Val())           //2
+	fmt.Println(DB.HDel("info", "name").Val())   //1
+	fmt.Println(DB.HKeys("info").Val())          //[age]
+	fmt.Println(DB.HExists("info", "age").Val()) //true
+}
+
+func RedisSet() {
+	DB.SAdd("set", "a", "b", "c", "d")
+	fmt.Println(DB.SIsMember("set", "a").Val()) //true
+	fmt.Println(DB.SMembers("set").Val())       //[a b c d]
+	fmt.Println(DB.SRem("set", "d").Val())      //1
+	fmt.Println(DB.SCard("set").Val())          //3
+
+	DB.SAdd("set1", 1, 2, 3)
+	DB.SAdd("set2", 2, 3, 4)
+	fmt.Println(DB.SDiff("set1", "set2").Val())  //[1]
+	fmt.Println(DB.SInter("set1", "set2").Val()) //[2 3]
+	fmt.Println(DB.SUnion("set1", "set2").Val()) //[1 2 3 4]
+}
+
+func RedisZset() {
+	DB.ZAdd("class", redis.Z{Score: 80, Member: "zhangsan"}, redis.Z{Score: 40, Member: "lisi"}, redis.Z{Score: 30, Member: "wangwu"})
+	fmt.Println(DB.ZCard("class").Val())                                               //3
+	fmt.Println(DB.ZRange("class", 0, -1).Val())                                       //[wangwu lisi zhangsan]
+	fmt.Println(DB.ZScore("class", "lisi").Val())                                      //40
+	fmt.Println(DB.ZRank("class", "zhangsan").Val())                                   //2
+	fmt.Println(DB.ZCount("class", "20", "50").Val())                                  //2
+	fmt.Println(DB.ZRangeByScore("class", redis.ZRangeBy{Min: "20", Max: "50"}).Val()) //[wangwu lisi]
+	fmt.Println(DB.ZRevRangeWithScores("class", 0, -1).Val())                          //[{80 zhangsan} {40 lisi} {30 wangwu}]
+}
+
+func RedisPipeLine() {
+	DB.Pipelined(func(tx redis.Pipeliner) error {
+		tx.Set("age", 18, 0)
+		return nil
+	})
+	fmt.Println(DB.Get("age").Int())
+}
+
+func RedisPipeLine1() {
+	tx := DB.Pipeline()
+	// 添加命令到管道
+	tx.Set("age", 18, 0)
+	getCmd := tx.Get("age")
+	// 执行管道
+	_, err := tx.Exec()
+	if err != nil {
+		fmt.Println("执行失败:", err)
+		return
+	}
+	if age, err := getCmd.Result(); err == nil {
+		fmt.Println("age的值:", age) // 输出: age的值: 18
+	} else {
+		fmt.Println("获取失败:", err)
+	}
+}
+
+func RedisWatch() {
+	DB.Watch(func(tx *redis.Tx) error {
+		_, err := tx.Pipelined(func(pipe redis.Pipeliner) error {
+			time.Sleep(5 * time.Second)
+			pipe.Set("age", 19, 0)
+			return nil
+		})
+		if err != nil {
+			fmt.Println("事务不成功")
+			return err
+		}
+		fmt.Println(tx.Get("age").Int())
+		return nil
+	}, "age")
+}
+
+func main() {
+	RedisClient()
+	//RedisString()
+	//RedisString1()
+	//RedisList()
+	//RedisHash()
+	//RedisSet()
+	//RedisZset()
+	//RedisPipeLine()
+	//RedisPipeLine1()
+	RedisWatch()
+}
+```
+
+<hr>
+
+### 持久化
+
+#### RDB持久化
+默认是开启的，默认的存储文件是 dump.rdb
+
+1.配置自动备份:
+默认是 一分钟内修改了一万次，5分钟内修改了10次，30分钟内修改了1次
+```shell
+save 3600 1
+save 300 100
+save 60 10000
+```
+2.手动命令备份:
+save：save时只管保存，其他不管，全部阻塞，手动保存，不建议使用。
+bgsave：redis会在后台异步进行快照操作，快照同时还可以响应客户端情况。
+可以使用lastsave命令获取最后一次成功生成快照的时间（时间戳）
+
+<hr>
+
+#### AOF持久化
+虽然RDB能够很好地解决数据持久化问题，但是它的缺点也很明显：每次都需要去完整地保存整个数据库中的数据，
+同时后台保存过程中也会产生额外的内存开销， 最严重的是它并不是实时保存的，如果在自动保存触发之前服务器崩溃
+，那么依然会导致少量数据的丢失。 而AOF就是另一种方式，它会以日志的形式将我们每次执行的命令都进行保存，
+服务器重启时会将所有命令依次执行， 通过这种重演的方式将数据恢复，这样就能很好解决实时性存储问题。
+
+```shell
+appendonly yes
+appendfilename "appendonly.aof"
+appendfsync always
+dir ./
+```
+appendfsync always：每次写入立即同步
+appendfsync everysec：每秒同步
+appendfsync no：不主动同步

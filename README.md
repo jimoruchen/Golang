@@ -13,32 +13,50 @@
 
 ### 代码
 ```go
+package main
+
+import "fmt"
+
 func twoSum(nums []int, target int) []int {
-    var mapAns = map[int]int{}
-    len := len(nums)
-    for i := 0; i < len; i++ {
-        value, ok := mapAns[target - nums[i]]
-        if (ok) {
-            return []int{i, value}
-        } else {
-            mapAns[nums[i]] = i
-        }
-    }
-    return []int{}
+	mapAns := map[int]int{}
+	for i, num := range nums {
+		if value, ok := mapAns[target-num]; ok {
+			return []int{value, i}
+		} else {
+			mapAns[num] = i
+		}
+	}
+	return nil
 }
-```
-```go
-func twoSum(nums []int, target int) []int {
-    var mapAns = map[int]int{}
-    len := len(nums)
-    for i := 0; i < len; i++ {
-        if value, ok := mapAns[target - nums[i]]; ok {
-            return []int{i, value}
-        } else {
-            mapAns[nums[i]] = i
-        }
-    }
-    return []int{}
+
+func twoSum1(nums []int, target int) []int {
+	var Mymap = make(map[int]int)
+	for i := 0; i < len(nums); i++ {
+		if val, ok := Mymap[target-nums[i]]; ok {
+			return []int{val, i}
+		} else {
+			Mymap[nums[i]] = i
+		}
+	}
+	return nil
+}
+
+func twoSum2(nums []int, target int) []int {
+	var maps = map[int]int{}
+	for i, num := range nums {
+		if _, ok := maps[target-num]; ok {
+			return []int{i, maps[target-num]}
+		}
+		maps[num] = i
+	}
+	return nil
+}
+
+func main() {
+	var nums = []int{2, 7, 11, 15}
+	var target = 9
+	ans := twoSum2(nums, target)
+	fmt.Println(ans)
 }
 ```
 
@@ -512,6 +530,49 @@ func main() {
 	PrintLinkedList(list)
 	list = reverseBetween(list, left, right)
 	PrintLinkedList(list)
+}
+```
+
+<hr>
+
+## 128、最长连续序列
+### 题目
+给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+请你设计并实现时间复杂度为 O(n) 的算法解决此问题。
+
+* 示例1：
+>输入：nums = [100,4,200,1,3,2]
+>输出：4
+>解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+func longestConsecutive(nums []int) int {
+	ans := 0
+	maps := make(map[int]bool)
+	for _, num := range nums {
+		maps[num] = true
+	}
+	for k, _ := range maps {
+		if maps[k-1] {
+			continue
+		}
+		y := k + 1
+		for maps[y] {
+			y++
+		}
+		ans = max(ans, y-k)
+	}
+	return ans
+}
+
+func main() {
+	nums := []int{100, 4, 200, 1, 3, 2}
+	fmt.Println(longestConsecutive(nums))
 }
 ```
 

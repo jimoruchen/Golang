@@ -59,3 +59,7 @@ sort.Slice(people, func(i, j int) bool {
 
 ## 去除map所有元素
 直接重新构建map，`maps = make(map[int]int)`
+
+## errors 包 (错误处理)
+`errors.New(text)`	创建一个简单的错误。
+`fmt.Errorf(...)`	创建一个格式化的错误（更常用）。

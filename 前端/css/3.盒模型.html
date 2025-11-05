@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>盒模型</title>
+    <style>
+        *{
+            box-sizing: border-box;
+        }
+        .box{
+            width: 200px;
+            height: 200px;
+            padding: 20px;
+            background: aqua;
+            border: 10px solid red;
+            margin: 20px;
+        }
+        .block{
+            width: 300px;
+        }
+        .sub_block1{
+            color: aqua;
+            display: inline;
+        }
+        .sub_block2{
+            color: red;
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+<div class="box">内容</div>
+<div class="block">
+    <div class="sub_block1 inline">你好</div>
+    <div class="sub_block2 inline">你好</div>
+</div>
+</body>
+</html>

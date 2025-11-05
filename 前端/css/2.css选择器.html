@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>选择器</title>
+    <style>
+        #box{
+            color: red;
+        }
+        .footer{
+            color: blue;
+            background: aqua;
+        }
+        .red{
+            color: red;
+        }
+        h2{
+            font-size: 20px;
+        }
+        a[href]{
+            color: aqua;
+        }
+        *{
+            margin: 0;
+            /*通用选择器*/
+        }
+        .footer.red{
+            background: azure;
+        }
+        h3{
+            color: azure;
+        }
+        .aaa{
+            color: aqua;
+        }
+        .aaa,h3{
+            font-size: 30px;
+
+        }
+        .bub .s1{
+            color: aliceblue;
+            font-size: 30px;
+        }
+        .bub>.children{
+            color: azure;
+        }
+    </style>
+</head>
+<body>
+<div id="box">id选择器</div>
+<div class="footer">类选择器</div>
+<h2>标签选择器</h2>
+<a href="https://www.baidu.com/">属性选择器</a>
+<div class="footer red">交集选择器</div>
+<h3>并集选择器</h3>
+<div class="aaa">并集选择器</div>
+
+<div class="bub">
+    <div class="sub">
+        <div class="s1">后代选择器</div>
+    </div>
+    <div class="children">子选择器</div>
+</div>
+
+
+</body>
+</html>

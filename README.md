@@ -499,6 +499,55 @@ func main() {
 
 <hr>
 
+## 56、合并区间
+### 题目
+以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。  
+请你合并所有重叠的区间，并返回 一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间 。
+
+* 示例1：
+>输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+>输出：[[1,6],[8,10],[15,18]]
+>解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6]
+
+### 代码
+```go
+package main
+
+import (
+	"fmt"
+	"slices"
+)
+
+func merge(intervals [][]int) [][]int {
+	ans := make([][]int, 0)
+	// sort.Slice(intervals, func(i, j int) bool {
+	//     return intervals[i][0] < intervals[j][0]
+	// })
+	slices.SortFunc(intervals, func(p, q []int) int {
+		return p[0] - q[0]
+	})
+	for _, nums := range intervals {
+		length := len(ans)
+		if length > 0 &&  nums[0] <= ans[length - 1][1] {
+			ans[length -1][1] = max(nums[1], ans[length -1][1])
+		} else {
+			ans = append(ans, nums)
+		}
+	}
+	return ans
+}
+
+func main() {
+	intervals := [][]int{{1, 3}, {2, 6}, {8, 10}, {15, 18}}
+	intervals = merge(intervals)
+	for _, interval := range intervals {
+		fmt.Println(interval)
+	}
+}
+```
+
+<hr>
+
 ## 92、反转链表 II
 ### 题目
 给你单链表的头指针 head 和两个整数 left 和 right ，其中 left <= right 。请你反转从位置 left 到位置 right 的链表节点，返回 反转后的链表 。

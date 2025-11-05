@@ -54,6 +54,53 @@ sort.Slice(people, func(i, j int) bool {
 })
 ```
 
+## slices.SortFunc
+```go
+package main
+
+import (
+    "fmt"
+    "slices"
+)
+
+func main() {
+    words := []string{"banana", "apple", "cherry"}
+    slices.SortFunc(words, func(a, b string) int {
+        return len(a) - len(b) // 按长度升序
+    })
+    fmt.Println(words) // 输出: [apple banana cherry]
+}
+```
+```go
+package main
+
+import (
+    "fmt"
+    "sort"
+    "slices"
+)
+
+func main() {
+    // 原始数据：表示区间 [start, end]
+    intervals := [][]int{{3, 6}, {1, 4}, {2, 8}, {5, 7}}
+
+    // 方法1: 使用 sort.Slice (Go 1.8+)
+    sort.Slice(intervals, func(i, j int) bool {
+        return intervals[i][0] < intervals[j][0]
+    })
+    fmt.Println("sort.Slice:", intervals)
+
+    // 重置数据（因为上面已修改原切片）
+    intervals = [][]int{{3, 6}, {1, 4}, {2, 8}, {5, 7}}
+
+    // 方法2: 使用 slices.SortFunc (Go 1.21+)
+    slices.SortFunc(intervals, func(a, b []int) int {
+        return a[0] - b[0]
+    })
+    fmt.Println("slices.SortFunc:", intervals)
+}
+```
+
 ## 判断map为空
 直接判断`len(maps) == 0`
 

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <meta charset="UTF-8">
+        <title>grid</title>
+    <style>
+        body{
+            margin: 0;
+        }
+        .grid {
+            width: 400px;
+            height: 400px;
+            background-color: #45becf;
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            grid-template-rows: 100px 100px 100px;
+            /*justify-content: space-around;*/
+            /*justify-content: space-between;*/
+            /*justify-content: space-evenly;*/
+            place-content: end end;
+            row-gap: 20px;
+            column-gap: 20px;
+        }
+        .grid .item{
+            width: 100%;
+            height: 100%;
+            background-color: #247ad0;
+        }
+
+        .grid1 {
+            margin-top: 20px;
+            width: 400px;
+            height: 400px;
+            background-color: #4da17b;
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            grid-template-rows: 100px 100px 100px;
+            place-content: end end;
+            row-gap: 20px;
+            column-gap: 20px;
+            /*justify-items: center;*/
+            /*align-items: center;*/
+            place-items: end end;
+        }
+        .grid1 .item{
+            width: 50px;
+            height: 50px;
+            background-color: #247ad0;
+        }
+        .item-5{
+            justify-self: center;
+            align-self: center;
+        }
+
+        .grid2 {
+            margin-top: 20px;
+            width: 400px;
+            height: 400px;
+            background-color: #4da17b;
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            grid-template-rows: 100px 100px 100px;
+            gap: 2px;
+        }
+        .grid2 .item{
+            width: 100%;
+            height: 100%;
+            background-color: #247ad0;
+        }
+        .item-8{
+            grid-column-start: 2;
+            grid-column-end: 4;
+        }
+    </style>
+</head>
+<body>
+<div class="grid">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+    <div class="item">4</div>
+    <div class="item">5</div>
+    <div class="item">6</div>
+    <div class="item">7</div>
+    <div class="item">8</div>
+    <div class="item">9</div>
+</div>
+<div class="grid1">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+    <div class="item">4</div>
+    <div class="item item-5">5</div>
+    <div class="item">6</div>
+    <div class="item">7</div>
+    <div class="item">8</div>
+    <div class="item">9</div>
+</div>
+<div class="grid2">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+    <div class="item">4</div>
+    <div class="item">5</div>
+    <div class="item">6</div>
+    <div class="item">7</div>
+    <div class="item item-8">8</div>
+</div>
+</body>
+</html>

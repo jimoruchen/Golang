@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>flex</title>
     <style>
+        body{
+            margin: 0;
+        }
         .item{
             width: 40px;
             height: 40px;
@@ -11,13 +14,49 @@
         }
         .flex{
             display: flex;
-            justify-content: space-between;
+            /*justify-content: space-between;*/
+            /*justify-content: center;*/
+            justify-content: space-evenly;
         }
         .flex1{
             margin-top: 20px;
             display: flex;
             flex-direction: column;     /*默认是按行排*/
             /*flex-direction: column-reverse;*/
+        }
+        .flex2{
+            margin-top: 20px;
+            width: 500px;
+            height: 400px;
+            background-color: aqua;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+        .flex3{
+            margin-top: 20px;
+            width: 500px;
+            height: 400px;
+            background-color: aqua;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            /*flex-flow: row wrap;*/
+            justify-content: start;
+            align-items: start;
+        }
+        .flex3 .item{
+            width: 100px;
+        }
+        .flex4{
+            margin-top: 20px;
+            width: 500px;
+            background-color: aqua;
+            display: flex;
+        }
+        .flex4 .item{
+            order: 10;
         }
     </style>
 </head>
@@ -41,6 +80,32 @@
     <div class="item">6</div>
     <div class="item">7</div>
     <div class="item">8</div>
+</div>
+<div class="flex2">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+    <div class="item">4</div>
+    <div class="item">5</div>
+    <div class="item">6</div>
+    <div class="item">7</div>
+    <div class="item">8</div>
+</div>
+<div class="flex3">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+    <div class="item">4</div>
+    <div class="item">5</div>
+    <div class="item">6</div>
+    <div class="item">7</div>
+    <div class="item">8</div>
+</div>
+<div class="flex4">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+    <div class="item" style="order: 1">4</div>
 </div>
 </body>
 </html>

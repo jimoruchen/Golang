@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>grid</title>
+    <style>
+        body{
+            margin: 0;
+        }
+        .flex {
+            width: 600px;
+            background-color: #f0eeee;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .flex .item{
+            width: 135px;
+            height: 40px;
+            background-color: #247ad0;
+            margin-bottom: 20px;
+        }
+        /*.flex .item:nth-child(4n+1),*/
+        /*.flex .item:nth-child(4n+2),*/
+        /*.flex .item:nth-child(4n+3){*/
+        /*    margin-right: auto;*/
+        /*}*/
+
+        .box{
+            background-color: #367440;
+            width: 600px;
+            margin-top: 20px;
+        }
+        .box .item{
+            width: 135px;
+            height: 40px;
+            background-color: #247ad0;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .box .item:nth-child(4n+1),
+        .box .item:nth-child(4n+2),
+        .box .item:nth-child(4n+3){
+            margin-right: 15.2px;
+        }
+
+        .grid {
+            width: 600px;
+            background-color: #a84141;
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            row-gap: 20px;
+            column-gap: 20px;
+        }
+        .grid .item{
+            width: 100%;
+            height: 40px;
+            background-color: #247ad0;
+        }
+
+    </style>
+</head>
+<body>
+<div class="flex">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+    <div class="item">4</div>
+    <div class="item">5</div>
+    <div class="item">6</div>
+    <div class="item">7</div>
+    <div class="item">8</div>
+</div>
+<div class="box">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+    <div class="item">4</div>
+    <div class="item">5</div>
+    <div class="item">6</div>
+    <div class="item">7</div>
+    <div class="item">8</div>
+</div>
+<div class="grid">
+    <div class="item">1</div>
+    <div class="item">2</div>
+    <div class="item">3</div>
+    <div class="item">4</div>
+    <div class="item">5</div>
+    <div class="item">6</div>
+    <div class="item">7</div>
+    <div class="item">8</div>
+</div>
+</body>
+</html>

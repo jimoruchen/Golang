@@ -105,6 +105,50 @@ func main() {
 
 <hr>
 
+## 11、盛最多水的容器
+### 题目
+给定一个长度为 n 的整数数组 height 。有 n 条垂线，第 i 条线的两个端点是 (i, 0) 和 (i, height[i]) 。  
+找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。  
+返回容器可以储存的最大水量。  
+
+* 示例1：
+>输入：[1,8,6,2,5,4,8,3,7]
+>输出：49
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+func maxArea(height []int) int {
+	length := len(height)
+	ans := 0
+	left := 0
+	right := length - 1
+	for left != right {
+		tmp := 0
+		if height[left] < height[right] {
+			tmp = height[left] * (right - left)
+			ans = max(ans, tmp)
+			left++
+		} else {
+			tmp = height[right] * (right - left)
+			ans = max(ans, tmp)
+			right--
+		}
+	}
+	return ans
+}
+
+func main() {
+	nums := []int{1, 8, 6, 2, 5, 4, 8, 3, 7}
+	fmt.Println(maxArea(nums))
+}
+```
+
+<hr>
+
 ## 19、删除链表的倒数第 N 个结点
 ### 题目
 给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。

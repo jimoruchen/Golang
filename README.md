@@ -1580,6 +1580,43 @@ func findMaxConsecutiveOnes(nums []int) int {
 
 <hr>
 
+## 560、和为 K 的子数组
+### 题目
+给你一个整数数组 nums 和一个整数 k ，请你统计并返回 该数组中和为 k 的子数组的个数 。
+子数组是数组中元素的连续非空序列。
+
+* 示例1：
+>输入：nums = [1,1,1], k = 2
+>输出：2
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+func subarraySum(nums []int, k int) int {
+	count, sum := 0, 0
+	prefixMap := map[int]int{0: 1}
+	for _, num := range nums {
+		sum += num
+		if tmp, ok := prefixMap[sum-k]; ok {
+			count += tmp
+		}
+		prefixMap[sum]++
+	}
+	return count
+}
+
+func main() {
+	var nums = []int{1, 2, 3}
+	k := 3
+	fmt.Println(subarraySum(nums, k))
+}
+```
+
+<hr>
+
 ## 876、链表的中间结点
 ### 题目
 给定一个头结点为 head 的非空单链表，返回链表的中间结点。  

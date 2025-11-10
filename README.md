@@ -1100,6 +1100,52 @@ func main() {
 
 <hr>
 
+## 189、轮转数组
+### 题目
+给定一个整数数组 nums，将数组中的元素向右轮转 k 个位置，其中 k 是非负数。  
+
+* 示例1：
+>输入：nums = [1,2,3,4,5,6,7], k = 3
+>输出：[5,6,7,1,2,3,4]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+func rotate(nums []int, k int) {
+	var tmp []int
+	k = k % len(nums)
+	for i := len(nums) - k; i < len(nums); i++ {
+		tmp = append(tmp, nums[i])
+	}
+	fmt.Println(tmp)
+	for i := 0; i < len(nums); i++ {
+		tmp = append(tmp, nums[i])
+	}
+	copy(nums, tmp)
+}
+
+func rotate1(nums []int, k int) {
+	tmp := make([]int, len(nums))
+	k = k % len(nums)
+	for i, num := range nums {
+		tmp[(k+i)%len(nums)] = num
+	}
+	copy(nums, tmp)
+}
+
+func main() {
+	nums := []int{1, 2, 3, 4, 5, 6, 7}
+	k := 3
+	rotate(nums, k)
+	fmt.Println(nums)
+}
+```
+
+<hr>
+
 ## 203、移除链表元素
 ### 题目
 给你一个链表的头节点 head 和一个整数 val ，请你删除链表中所有满足 Node.val == val 的节点，并返回 新的头节点 。

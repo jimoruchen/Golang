@@ -1490,6 +1490,51 @@ func main() {
 
 <hr>
 
+## 238、除自身以外数组的乘积
+### 题目
+给你一个整数数组 nums，返回 数组 answer ，其中 answer[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积 。
+
+* 示例1：
+>输入：nums = [1,2,3,4]
+>输出：[24,12,8,6]
+
+### 代码
+```go
+package main
+
+import (
+	"fmt"
+)
+
+func productExceptSelf(nums []int) []int {
+	prefix := make([]int, len(nums))
+	suffix := make([]int, len(nums))
+	ans := make([]int, len(nums))
+	tmp := 1
+	for i := 0; i < len(nums); i++ {
+		prefix[i] = tmp
+		tmp = tmp * nums[i]
+	}
+	tmp = 1
+	for i := len(nums) - 1; i >= 0; i-- {
+		suffix[i] = tmp
+		tmp = tmp * nums[i]
+	}
+	for i := 0; i < len(nums); i++ {
+		ans[i] = prefix[i] * suffix[i]
+	}
+	return ans
+}
+
+func main() {
+	nums := []int{1, 2, 3, 4}
+	ans := productExceptSelf(nums)
+	fmt.Println(ans)
+}
+```
+
+<hr>
+
 ## 283、移动零
 ### 题目
 给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。

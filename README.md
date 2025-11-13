@@ -149,6 +149,64 @@ func main() {
 
 <hr>
 
+## 15、三数之和
+### 题目
+给你一个整数数组 nums ，判断是否存在三元组 [nums[i], nums[j], nums[k]] 满足 i != j、i != k 且 j != k ，
+同时还满足 nums[i] + nums[j] + nums[k] == 0 。请你返回所有和为 0 且不重复的三元组。
+
+* 示例1：
+>输入：nums = [-1,0,1,2,-1,-4]
+>输出：[[-1,-1,2],[-1,0,1]]
+
+### 代码
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func threeSum(nums []int) [][]int {
+	var ans [][]int
+	sort.Ints(nums)
+	for i := 0; i < len(nums)-2; i++ {
+		if i > 0 && nums[i] == nums[i-1] {
+			continue
+		}
+		left := i + 1
+		right := len(nums) - 1
+		for left < right {
+			sum := nums[i] + nums[left] + nums[right]
+			if sum == 0 {
+				ans = append(ans, []int{nums[i], nums[left], nums[right]})
+				for left < right && nums[left+1] == nums[left] {
+					left++
+				}
+				for left < right && nums[right-1] == nums[right] {
+					right--
+				}
+				left++
+				right--
+			} else if sum < 0 {
+				left++
+			} else {
+				right--
+			}
+		}
+	}
+	return ans
+}
+
+func main() {
+	nums := []int{-1, 0, 1, 2, -1, -4}
+	ans := threeSum(nums)
+	fmt.Println(ans)
+}
+```
+
+<hr>
+
 ## 19、删除链表的倒数第 N 个结点
 ### 题目
 给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。

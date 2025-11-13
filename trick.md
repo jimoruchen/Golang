@@ -204,3 +204,6 @@ func main() {
     fmt.Println(newFront)
 }
 ```
+
+## for循环
+<img src="https://s2.loli.net/2025/11/12/1DpRvjgumexFtaJ.png"  alt="">

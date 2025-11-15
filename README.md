@@ -275,6 +275,67 @@ func main() {
 
 <hr>
 
+## 20、有效的括号
+### 题目
+给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+
+* 示例1：
+>输入：s = "()[]{}"
+>输出：true
+
+### 代码
+```go
+package main
+
+import (
+	"container/list"
+	"fmt"
+)
+
+func isValid(s string) bool {
+	stack := list.New()
+	for _, str := range s {
+		if str == '(' || str == '[' || str == '{' {
+			stack.PushBack(str)
+		} else if str == ')' {
+			if stack.Len() == 0 {
+				return false
+			}
+			if stack.Back().Value != '(' {
+				return false
+			}
+			stack.Remove(stack.Back())
+		} else if str == ']' {
+			if stack.Len() == 0 {
+				return false
+			}
+			if stack.Back().Value != '[' {
+				return false
+			}
+			stack.Remove(stack.Back())
+		} else {
+			if stack.Len() == 0 {
+				return false
+			}
+			if stack.Back().Value != '{' {
+				return false
+			}
+			stack.Remove(stack.Back())
+		}
+	}
+	if stack.Len() != 0 {
+		return false
+	}
+	return true
+}
+
+func main() {
+	fmt.Println(isValid("()"))
+}
+```
+
+<hr>
+
 ## 21、合并两个有序链表
 ### 题目
 将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
@@ -1019,6 +1080,71 @@ func main() {
 	head.Next.Next.Next = &ListNode{Val: 4}
 	head.Next.Next.Next.Next = head
 	fmt.Println(detectCycle(head).Val)
+}
+```
+
+<hr>
+
+## 155、最小栈
+### 题目
+设计一个支持 push ，pop ，top 操作，并能在常数时间内检索到最小元素的栈。  
+实现 MinStack 类:  
+MinStack() 初始化堆栈对象。  
+void push(int val) 将元素val推入堆栈。  
+void pop() 删除堆栈顶部的元素。  
+int top() 获取堆栈顶部的元素。  
+int getMin() 获取堆栈中的最小元素。  
+
+* 示例1：
+>输入：["MinStack","push","push","push","getMin","pop","top","getMin"] [[],[-2],[0],[-3],[],[],[],[]]
+>输出：[null,null,null,null,-3,null,0,-2]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type MinStack struct {
+	stack    []int
+	minStack []int
+}
+
+func Constructor() MinStack {
+	return MinStack{
+		stack:    []int{},
+		minStack: []int{},
+	}
+}
+
+func (this *MinStack) Push(val int) {
+	this.stack = append(this.stack, val)
+	tmp := val
+	if len(this.minStack) > 0 {
+		tmp = min(this.minStack[len(this.minStack)-1], val)
+	}
+	this.minStack = append(this.minStack, tmp)
+}
+
+func (this *MinStack) Pop() {
+	this.stack = this.stack[:len(this.stack)-1]
+	this.minStack = this.minStack[:len(this.minStack)-1]
+}
+
+func (this *MinStack) Top() int {
+	return this.stack[len(this.stack)-1]
+}
+
+func (this *MinStack) GetMin() int {
+	return this.minStack[len(this.minStack)-1]
+}
+
+func main() {
+	MinStack := Constructor()
+	MinStack.Push(1)
+	MinStack.Push(2)
+	MinStack.Push(3)
+	fmt.Println(MinStack.Top(), MinStack.GetMin())
 }
 ```
 

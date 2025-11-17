@@ -522,6 +522,45 @@ func removeElement1(nums []int, val int) int {
 
 <hr>
 
+## 35、搜索插入位置
+### 题目
+给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
+
+* 示例1：
+>输入：nums = [1,3,5,6], target = 5
+>输出：2
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+func searchInsert(nums []int, target int) int {
+	left := 0
+	right := len(nums) - 1
+	for left <= right { //最后一轮没命中刚好left+1就是要插入的位置
+		mid := (right-left)/2 + left
+		if nums[mid] > target {
+			right = mid - 1
+		} else if nums[mid] < target {
+			left = mid + 1
+		} else {
+			return mid
+		}
+	}
+	return left
+}
+
+func main() {
+	nums := []int{1, 3, 5, 6}
+	target := 5
+	fmt.Println(searchInsert(nums, target))
+}
+```
+
+<hr>
+
 ## 49、字母异位词分组
 ### 题目
 给你一个字符串数组，请你将 字母异位词 组合在一起。可以按任意顺序返回结果列表。

@@ -100,4 +100,27 @@ func main() {
 
 <hr>
 
-## 
+## 类型别名和类型定义
+```go
+package main
+
+import "fmt"
+
+type MyInt1 int     //新类型
+type MyInt2 = int   //类型别名
+
+func main() {
+    var i int =0
+    var i1 MyInt1 = i   //将 int 类型的变量赋值给 MyInt1 类型的变量，所以不行。
+    var i2 MyInt2 = i   // MyInt2 只是 int 的别名，本质上还是 int，可以赋值。
+    fmt.Println(i1,i2)
+}
+```
+
+<hr>
+
+## 拼接字符串
+<img src="https://s2.loli.net/2025/11/17/NgxZKqS4ksdzbRv.png"  alt="">
+
+B,D正确，A,C中单引号 ' 只能用于定义单个字符（rune），不能用于字符串。
+

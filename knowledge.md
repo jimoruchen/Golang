@@ -2400,8 +2400,43 @@ func main() {
 	}
 }
 ```
+<img src="https://s2.loli.net/2025/11/17/L9mdTOVjtU5DFPX.png"  alt="">
 
 #### 文件写入
+
+##### 创建文件
+```go
+package main
+
+import (
+    "fmt"
+    "os"
+)
+
+func main() {
+    // 创建或截断文件（如果存在则清空内容）
+    file, err := os.Create("output.txt")
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "无法创建文件: %v\n", err)
+        return
+    }
+    defer file.Close()
+
+    // 写入字符串（需转为 []byte）
+    _, err = file.Write([]byte("Hello, World!\n"))
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "写入失败: %v\n", err)
+        return
+    }
+
+    // 写入格式化字符串
+    _, err = file.WriteString("Go is awesome!")
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "写入失败: %v\n", err)
+        return
+    }
+}
+```
 
 ##### 手动写
 ```go
@@ -2419,21 +2454,18 @@ func main() {
 		panic(err)
 	}
 	defer file.Close()
-
 	// 写入数据
 	_, err = file.Write([]byte("Hello World"))
 	if err != nil {
 		fmt.Println("写入失败:", err)
 		return
 	}
-
 	// ✅ 关键：将文件指针移动到开头
 	_, err = file.Seek(0, 0)
 	if err != nil {
 		fmt.Println("定位失败:", err)
 		return
 	}
-
 	// 读取全部内容
 	byteData, err := io.ReadAll(file)
 	if err != nil {
@@ -2458,6 +2490,33 @@ func main() {
 	fmt.Println(err)
 }
 ```
+
+##### bufio.Writer
+```go
+package main
+
+import (
+    "bufio"
+    "fmt"
+    "os"
+)
+
+func main() {
+    file, err := os.Create("buffered_output.txt")
+    if err != nil {
+        panic(err)
+    }
+    defer file.Close()
+    // 创建带缓冲的 Writer（默认 4KB 缓冲区）
+    writer := bufio.NewWriter(file)
+    defer writer.Flush() // ⚠️ 必须刷新！否则数据可能丢失
+    for i := 1; i <= 1000; i++ {
+        writer.WriteString(fmt.Sprintf("Line %d\n", i))
+        // 数据先写入内存缓冲区，满后才刷到磁盘
+    }
+}
+```
+
 
 ##### 文件复制
 ```go

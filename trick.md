@@ -207,3 +207,76 @@ func main() {
 
 <hr>
 
+## 二维数组转一维
+leetcode74
+
+### 显示
+```go
+func searchMatrix(matrix [][]int, target int) bool {
+	var tmp []int
+	for _, row := range matrix {
+		tmp = append(tmp, row...)
+	}
+	left := 0
+	right := len(tmp) - 1
+	for left <= right {
+		mid := (right - left) / 2 + left
+		if tmp[mid] == target {
+			return true
+		} else if tmp[mid] > target {
+			right = mid - 1
+		} else {
+			left = mid + 1
+		}
+	}
+	return false
+}
+```
+
+### 隐式
+```go
+func searchMatrix(matrix [][]int, target int) bool {
+    m, n := len(matrix), len(matrix[0])
+    left, right := 0, m*n-1
+
+    for left <= right {
+        mid := (left + right) / 2
+        row, col := mid/n, mid%n
+        val := matrix[row][col]
+        if val == target {
+            return true
+        } else if val > target {
+            right = mid - 1
+        } else {
+            left = mid + 1
+        }
+    }
+    return false
+}
+```
+
+## sort.Search(n, f)
+在区间 [0, n) 中查找第一个满足 f(i) == true 的最小索引 i。
+leetcode74
+```go
+func searchMatrix(matrix [][]int, target int) bool {
+    row := sort.Search(len(matrix), func(i int) bool {
+        return matrix[i][0] > target
+    }) - 1
+    if row < 0 {
+        return false
+    }
+    // col := sort.Search(len(matrix[0]), func(i int) bool {
+    //     return matrix[row][i] >= target
+    // })
+    col := sort.SearchInts(matrix[row], target)
+    return col < len(matrix[row]) && target == matrix[row][col]
+}
+```
+
+## sort.SearchInts(slice, target)
+在已排序的 []int 中找第一个 ≥ target 的位置。
+等价于
+```go
+sort.Search(len(slice), func(i int) bool { return slice[i] >= target })
+```

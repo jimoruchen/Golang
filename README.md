@@ -750,6 +750,87 @@ func main() {
 
 <hr>
 
+## 74、搜索二维矩阵
+### 题目
+给你一个满足下述两条属性的 m x n 整数矩阵：
+每行中的整数从左到右按非严格递增顺序排列。
+每行的第一个整数大于前一行的最后一个整数。
+给你一个整数 target ，如果 target 在矩阵中，返回 true ；否则，返回 false 。
+
+* 示例1：
+>输入：matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3
+>输出：true
+
+### 代码
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func searchMatrix(matrix [][]int, target int) bool {
+	var tmp []int
+	for _, row := range matrix {
+		tmp = append(tmp, row...)
+	}
+	left := 0
+	right := len(tmp) - 1
+	for left <= right {
+		mid := (right-left)/2 + left
+		if tmp[mid] == target {
+			return true
+		} else if tmp[mid] > target {
+			right = mid - 1
+		} else {
+			left = mid + 1
+		}
+	}
+	return false
+}
+
+func searchMatrix1(matrix [][]int, target int) bool {
+	m, n := len(matrix), len(matrix[0])
+	left, right := 0, m*n-1
+
+	for left <= right {
+		mid := (left + right) / 2
+		row, col := mid/n, mid%n
+		val := matrix[row][col]
+		if val == target {
+			return true
+		} else if val > target {
+			right = mid - 1
+		} else {
+			left = mid + 1
+		}
+	}
+	return false
+}
+
+func searchMatrix2(matrix [][]int, target int) bool {
+	row := sort.Search(len(matrix), func(i int) bool {
+		return matrix[i][0] > target
+	}) - 1
+	if row < 0 {
+		return false
+	}
+	// col := sort.Search(len(matrix[0]), func(i int) bool {
+	//     return matrix[row][i] >= target
+	// })
+	col := sort.SearchInts(matrix[row], target)
+	return col < len(matrix[row]) && target == matrix[row][col]
+}
+
+func main() {
+	matrix := [][]int{{1, 3, 5, 7}, {10, 11, 16, 20}, {23, 30, 34, 50}}
+	fmt.Println(searchMatrix(matrix, 3))
+}
+```
+
+<hr>
+
 ## 92、反转链表 II
 ### 题目
 给你单链表的头指针 head 和两个整数 left 和 right ，其中 left <= right 。请你反转从位置 left 到位置 right 的链表节点，返回 反转后的链表 。
@@ -1753,6 +1834,48 @@ func main() {
 	nums := []int{1, 2, 3, 4}
 	ans := productExceptSelf(nums)
 	fmt.Println(ans)
+}
+```
+
+<hr>
+
+## 240、搜索二维矩阵 II
+### 题目
+编写一个高效的算法来搜索 m x n 矩阵 matrix 中的一个目标值 target 。该矩阵具有以下特性：
+每行的元素从左到右升序排列。
+每列的元素从上到下升序排列。
+
+* 示例1：
+>输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 5
+>输出：true
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+func searchMatrix(matrix [][]int, target int) bool {
+	if len(matrix) == 0 || len(matrix[0]) == 0 {
+		return false
+	}
+	row := 0
+	col := len(matrix[0]) - 1
+	for row < len(matrix) && col >= 0 {
+		if matrix[row][col] == target {
+			return true
+		} else if matrix[row][col] > target {
+			col--
+		} else {
+			row++
+		}
+	}
+	return false
+}
+
+func main() {
+	matrix := [][]int{{1, 4, 7, 11, 15}, {2, 5, 8, 12, 19}, {3, 6, 9, 16, 15}, {10, 13, 14, 17, 24}, {18, 21, 23, 26, 30}}
+	fmt.Println(searchMatrix(matrix, 5))
 }
 ```
 

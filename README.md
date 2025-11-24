@@ -583,6 +583,87 @@ func removeElement1(nums []int, val int) int {
 
 <hr>
 
+## 34、在排序数组中查找元素的第一个和最后一个位置
+### 题目
+给你一个按照非递减顺序排列的整数数组 nums，和一个目标值 target。请你找出给定目标值在数组中的开始位置和结束位置。
+如果数组中不存在目标值 target，返回 [-1, -1]。
+
+* 示例1：
+>输入：nums = [5,7,7,8,8,10], target = 8
+>输出：[3,4]
+
+### 代码
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func searchRange(nums []int, target int) []int {
+	left := findFirst(nums, target)
+	if left == -1 {
+		return []int{-1, -1}
+	}
+	right := findLast(nums, target)
+	return []int{left, right}
+}
+
+// 找第一个等于 target 的索引
+func findFirst(nums []int, target int) int {
+	i, j := 0, len(nums)-1
+	res := -1
+	for i <= j {
+		mid := i + (j-i)/2
+		if nums[mid] == target {
+			res = mid   // 记录可能的左边界
+			j = mid - 1 // 继续向左找
+		} else if nums[mid] < target {
+			i = mid + 1
+		} else {
+			j = mid - 1
+		}
+	}
+	return res
+}
+
+// 找最后一个等于 target 的索引
+func findLast(nums []int, target int) int {
+	i, j := 0, len(nums)-1
+	res := -1
+	for i <= j {
+		mid := i + (j-i)/2
+		if nums[mid] == target {
+			res = mid   // 记录可能的右边界
+			i = mid + 1 // 继续向右找
+		} else if nums[mid] < target {
+			i = mid + 1
+		} else {
+			j = mid - 1
+		}
+	}
+	return res
+}
+
+func searchRange1(nums []int, target int) []int {
+	leftmost := sort.SearchInts(nums, target)
+	if leftmost == len(nums) || nums[leftmost] != target {
+		return []int{-1, -1}
+	}
+	rightmost := sort.SearchInts(nums, target+1) - 1
+	return []int{leftmost, rightmost}
+}
+
+func main() {
+	nums := []int{5, 7, 7, 8, 8, 10}
+	target := 8
+	fmt.Println(searchRange1(nums, target))
+}
+```
+
+<hr>
+
 ## 35、搜索插入位置
 ### 题目
 给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。

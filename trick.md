@@ -275,7 +275,7 @@ func searchMatrix(matrix [][]int, target int) bool {
 ```
 
 ## sort.SearchInts(slice, target)
-在已排序的 []int 中找第一个 ≥ target 的位置。
+在已排序的 []int 中找第一个 ≥ target 的位置，没找到返回切片长度。
 等价于
 ```go
 sort.Search(len(slice), func(i int) bool { return slice[i] >= target })

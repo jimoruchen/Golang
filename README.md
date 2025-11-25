@@ -583,6 +583,57 @@ func removeElement1(nums []int, val int) int {
 
 <hr>
 
+## 33、搜索旋转排序数组
+### 题目
+整数数组 nums 按升序排列，数组中的值 互不相同 。
+在传递给函数之前，nums 在预先未知的某个下标 k（0 <= k < nums.length）上进行了 向左旋转，
+使数组变为 [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]]（下标 从 0 开始 计数）。
+例如， [0,1,2,4,5,6,7] 下标 3 上向左旋转后可能变为 [4,5,6,7,0,1,2] 。
+
+* 示例1：
+>输入：nums = [4,5,6,7,0,1,2], target = 0
+>输出：4
+
+### 代码
+```go
+package main
+
+func search(nums []int, target int) int {
+	n := len(nums)
+	if n == 0 {
+		return -1
+	}
+	if n == 1 {
+		if nums[0] == target {
+			return 0
+		}
+		return -1
+	}
+	l, r := 0, n - 1
+	for l <= r {
+		mid := l + (r - l) / 2
+		if nums[mid] == target {
+			return mid
+		} else if nums[mid] >= nums[0] {
+			if target >= nums[0] && target < nums[mid] {
+				r = mid - 1
+			} else {
+				l = mid + 1
+			}
+		} else {
+			if target > nums[mid] && target <= nums[n - 1] {
+				l = mid + 1
+			} else {
+				r = mid - 1
+			}
+		}
+	}
+	return -1
+}
+```
+
+<hr>
+
 ## 34、在排序数组中查找元素的第一个和最后一个位置
 ### 题目
 给你一个按照非递减顺序排列的整数数组 nums，和一个目标值 target。请你找出给定目标值在数组中的开始位置和结束位置。
@@ -1281,6 +1332,35 @@ func main() {
 	head.Next.Next.Next = &ListNode{Val: 4}
 	head.Next.Next.Next.Next = head
 	fmt.Println(detectCycle(head).Val)
+}
+```
+
+<hr>
+
+## 153、寻找旋转排序数组中的最小值
+### 题目
+已知一个长度为 n 的数组，预先按照升序排列，经由 1 到 n 次 旋转 后，得到输入数组。
+给你一个元素值 互不相同 的数组 nums ，它原来是一个升序排列的数组，并按上述情形进行了多次旋转。请你找出并返回数组中的 最小元素 。
+
+* 示例1：
+>输入：nums = [3,4,5,1,2]
+>输出：1
+
+### 代码
+```go
+package main
+
+func findMin(nums []int) int {
+	left, right := 0, len(nums)-1
+	for left < right { //当 left == right 时已找到唯一候选，无需继续；避免死循环
+		mid := left + (right-left)/2
+		if nums[mid] > nums[len(nums)-1] {
+			left = mid + 1
+		} else {
+			right = mid //mid 可能是最小值，必须保留
+		}
+	}
+	return nums[left]
 }
 ```
 

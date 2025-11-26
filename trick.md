@@ -167,6 +167,7 @@ func main() {
         e := stack.Back()
         fmt.Println(e.Value) // 3, 2, 1
         stack.Remove(e)
+		//e := stack.Remove(stack.Back()).(int)  //Remove()会返回Value，返回的是值，不是节点！
     }
 }
 ```
@@ -279,4 +280,45 @@ func searchMatrix(matrix [][]int, target int) bool {
 等价于
 ```go
 sort.Search(len(slice), func(i int) bool { return slice[i] >= target })
+```
+
+## 拼接字符、字符串
+```go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	chars := []byte{'a', 'b', 'c', 'd', 'e', 'f', 'g'}
+	var ch strings.Builder
+	for i := 0; i < len(chars); i++ {
+		ch.WriteByte(chars[i])
+	}
+	fmt.Println(ch.String())
+}
+```
+```go
+var b strings.Builder
+for i := 0; i < 5; i++ {
+    b.WriteString("Go ")
+}
+fmt.Println(b.String()) // Go Go Go Go Go 
+```
+
+## 字符串重复k次
+```go
+strings.Repeat(current, count)
+```
+
+## 字符转为数字
+```go
+tmp = int(s[i] - '0')
+```
+
+## string和byte拼接
+```go
+str += string(ch)
 ```

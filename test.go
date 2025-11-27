@@ -1,15 +1,16 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 func main() {
-	chars := []byte{'a', 'b', 'c', 'd', 'e', 'f', 'g'}
-	var ch strings.Builder
-	for i := 0; i < len(chars); i++ {
-		ch.WriteByte(chars[i])
+
+	for i := 1; i <= 9; i++ {
+		for j := i + 1; j <= 9; j++ {
+			fmt.Println(i, j)
+			if j == 5 {
+				break
+			}
+		}
+		fmt.Println("111")
 	}
-	fmt.Println(ch.String())
 }

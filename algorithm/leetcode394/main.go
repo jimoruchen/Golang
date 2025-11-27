@@ -22,8 +22,8 @@ func decodeString(s string) string {
 		} else if ch == ']' {
 			count := stack1.Remove(stack1.Back()).(int)
 			ans := stack2.Remove(stack2.Back()).(string)
-			tmp := strings.Repeat(res, count)
-			res = ans + tmp
+			str := strings.Repeat(res, count)
+			res = ans + str
 		} else {
 			res += string(ch)
 		}

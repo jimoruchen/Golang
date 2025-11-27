@@ -2184,8 +2184,8 @@ func decodeString(s string) string {
 		} else if ch == ']' {
 			count := stack1.Remove(stack1.Back()).(int)
 			ans := stack2.Remove(stack2.Back()).(string)
-			tmp := strings.Repeat(res, count)
-			res = ans + tmp
+			str := strings.Repeat(res, count)
+			res = ans + str
 		} else {
 			res += string(ch)
 		}
@@ -2363,6 +2363,44 @@ func main() {
 	var nums = []int{1, 2, 3}
 	k := 3
 	fmt.Println(subarraySum(nums, k))
+}
+```
+
+<hr>
+
+## 739、每日温度
+### 题目
+给定一个整数数组 temperatures ，表示每天的温度，返回一个数组 answer ，其中 answer[i] 是指对于第 i 天，下一个更高温度出现在几天后。如果气温在这之后都不会升高，请在该位置用 0 来代替。
+
+* 示例1：
+>输入：temperatures = [73,74,75,71,69,72,76,73]
+>输出：[1,1,4,2,1,1,0,0]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+func dailyTemperatures(temperatures []int) []int {
+	n := len(temperatures)
+	ans := make([]int, n)
+	var stack []int
+	for i := 0; i < n; i++ {
+		for len(stack) > 0 && temperatures[i] > temperatures[stack[len(stack)-1]] {
+			prevIndex := stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+			ans[prevIndex] = i - prevIndex
+		}
+		stack = append(stack, i)
+	}
+	return ans
+}
+
+func main() {
+	temperatures := []int{73, 74, 75, 71, 69, 72, 76, 73}
+	ans := dailyTemperatures(temperatures)
+	fmt.Println(ans)
 }
 ```
 

@@ -1609,6 +1609,50 @@ func main() {
 
 <hr>
 
+## 169、多数元素
+### 题目
+给定一个大小为 n 的数组 nums ，返回其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。
+
+* 示例1：
+>输入：nums = [3,2,3]
+>输出：3
+
+### 代码
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func majorityElement(nums []int) int {
+	ans := 0
+	maps := make(map[int]int)
+	for _, num := range nums {
+		maps[num]++
+	}
+	for k, v := range maps {
+		if v > len(nums)/2 {
+			ans = k
+		}
+	}
+	return ans
+}
+
+func majorityElement1(nums []int) int {
+	sort.Ints(nums)
+	return nums[len(nums)/2]
+}
+
+func main() {
+	nums := []int{1, 2, 2}
+	fmt.Println(majorityElement(nums))
+}
+```
+
+<hr>
+
 ## 189、轮转数组
 ### 题目
 给定一个整数数组 nums，将数组中的元素向右轮转 k 个位置，其中 k 是非负数。  

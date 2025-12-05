@@ -963,6 +963,61 @@ func main() {
 
 <hr>
 
+## 75、颜色分类
+### 题目
+给定一个包含红色、白色和蓝色、共 n 个元素的数组 nums ，原地 对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
+
+* 示例1：
+>输入：nums = [2,0,2,1,1,0]
+>输出：[0,0,1,1,2,2]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+func sortColors(nums []int) {
+	maps := make(map[int]int)
+	for _, num := range nums {
+		maps[num]++
+	}
+	for i := 0; i < maps[0]; i++ {
+		nums[i] = 0
+	}
+	for i := maps[0]; i < maps[0]+maps[1]; i++ {
+		nums[i] = 1
+	}
+	for i := maps[0] + maps[1]; i < len(nums); i++ {
+		nums[i] = 2
+	}
+}
+
+func sortColors1(nums []int) {
+	p0, p1 := 0, 0
+	for i, num := range nums {
+		nums[i] = 2
+		if num <= 1 {
+			nums[p1] = 1
+			p1++
+		}
+		if num == 0 {
+			nums[p0] = 0
+			p0++
+		}
+	}
+}
+
+func main() {
+	nums := []int{1, 1, 2, 0, 2, 0}
+	sortColors(nums)
+	fmt.Println(nums)
+}
+```
+
+<hr>
+
 ## 92、反转链表 II
 ### 题目
 给你单链表的头指针 head 和两个整数 left 和 right ，其中 left <= right 。请你反转从位置 left 到位置 right 的链表节点，返回 反转后的链表 。

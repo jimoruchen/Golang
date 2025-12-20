@@ -2271,6 +2271,47 @@ func moveZeroes1(nums []int) {
 
 <hr>
 
+## 287、寻找重复数
+### 题目
+给定一个包含 n + 1 个整数的数组 nums ，其数字都在 [1, n] 范围内（包括 1 和 n），可知至少存在一个重复的整数。  
+
+假设 nums 只有 一个重复的整数 ，返回 这个重复的数 。  
+
+* 示例1：
+>输入：nums = [1,3,4,2,2]
+>输出：2
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+func findDuplicate(nums []int) int {
+	slow, fast := 0, 0
+	for {
+		slow = nums[slow]
+		fast = nums[nums[fast]]
+		if slow == fast {
+			break
+		}
+	}
+	slow = 0
+	for slow != fast {
+		slow = nums[slow]
+		fast = nums[fast]
+	}
+	return slow
+}
+
+func main() {
+	nums := []int{1, 3, 4, 2, 2}
+	fmt.Println(findDuplicate(nums))
+}
+```
+
+<hr>
+
 ## 328、奇偶链表
 ### 题目
 给定单链表的头节点 head ，将所有索引为奇数的节点和索引为偶数的节点分别分组，保持它们原有的相对顺序，然后把偶数索引节点分组连接到奇数索引节点分组之后，返回重新排序的链表。

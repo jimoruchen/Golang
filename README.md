@@ -1136,6 +1136,52 @@ func main() {
 
 <hr>
 
+## 94、二叉树的中序遍历
+### 题目
+给定一个二叉树的根节点 root ，返回 它的 中序 遍历 。
+
+* 示例1：
+>输入：root = [1,null,2,3]
+>输出：[1,3,2]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func inorderTraversal(root *TreeNode) []int {
+	var result []int
+	var inorder func(*TreeNode)
+	inorder = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		inorder(node.Left)
+		result = append(result, node.Val)
+		inorder(node.Right)
+	}
+	inorder(root)
+	return result
+}
+
+func main() {
+	root := &TreeNode{Val: 1}
+	root.Right = &TreeNode{Val: 2}
+	root.Right.Left = &TreeNode{Val: 3}
+	result := inorderTraversal(root)
+	fmt.Println(result)
+}
+```
+
+<hr>
+
 ## 128、最长连续序列
 ### 题目
 给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
@@ -1477,6 +1523,98 @@ func main() {
 	head.Next.Next.Next = &ListNode{Val: 4}
 	head.Next.Next.Next.Next = head
 	fmt.Println(detectCycle(head).Val)
+}
+```
+
+<hr>
+
+## 144、二叉树的前序遍历
+### 题目
+给你二叉树的根节点 root ，返回它节点值的 前序 遍历。
+
+* 示例1：
+>输入：root = [1,null,2,3]
+>输出：[1,2,3]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func preorderTraversal(root *TreeNode) []int {
+	var result []int
+	var preorder func(*TreeNode)
+	preorder = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		result = append(result, node.Val)
+		preorder(node.Left)
+		preorder(node.Right)
+	}
+	preorder(root)
+	return result
+}
+
+func main() {
+	root := &TreeNode{Val: 1}
+	root.Right = &TreeNode{Val: 2}
+	root.Right.Left = &TreeNode{Val: 3}
+	result := preorderTraversal(root)
+	fmt.Println(result)
+}
+```
+
+<hr>
+
+## 144、二叉树的后序遍历
+### 题目
+给你一棵二叉树的根节点 root ，返回其节点值的 后序遍历 。
+
+* 示例1：
+>输入：root = [1,null,2,3]
+>输出：[3,2,1]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func postorderTraversal(root *TreeNode) []int {
+	var result []int
+	var postorder func(*TreeNode)
+	postorder = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		postorder(node.Left)
+		postorder(node.Right)
+		result = append(result, node.Val)
+	}
+	postorder(root)
+	return result
+}
+
+func main() {
+	root := &TreeNode{Val: 1}
+	root.Right = &TreeNode{Val: 2}
+	root.Right.Left = &TreeNode{Val: 3}
+	result := postorderTraversal(root)
+	fmt.Println(result)
 }
 ```
 

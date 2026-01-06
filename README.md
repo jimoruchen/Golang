@@ -1182,6 +1182,72 @@ func main() {
 
 <hr>
 
+## 104、二叉树的最大深度
+### 题目
+给定一个二叉树 root ，返回其最大深度。
+
+* 示例1：
+>输入：root = [1,null,2,3]
+>输出：3
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func maxDepth(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	leftDepth := maxDepth(root.Left)
+	rightDepth := maxDepth(root.Right)
+	if leftDepth > rightDepth {
+		return leftDepth + 1
+	}
+	return rightDepth + 1
+}
+
+func maxDepth1(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	queue := []*TreeNode{root}
+	depth := 0
+	for len(queue) > 0 {
+		depth++
+		size := len(queue)
+		for i := 0; i < size; i++ {
+			node := queue[0]
+			queue = queue[1:]
+			if node.Left != nil {
+				queue = append(queue, node.Left)
+			}
+			if node.Right != nil {
+				queue = append(queue, node.Right)
+			}
+		}
+	}
+	return depth
+}
+
+func main() {
+	root := &TreeNode{Val: 1}
+	root.Right = &TreeNode{Val: 2}
+	root.Right.Left = &TreeNode{Val: 3}
+	result := maxDepth(root)
+	fmt.Println(result)
+}
+```
+
+<hr>
+
 ## 128、最长连续序列
 ### 题目
 给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。

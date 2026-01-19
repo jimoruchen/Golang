@@ -1252,6 +1252,65 @@ func main() {
 
 <hr>
 
+## 101、二叉树的层序遍历
+### 题目
+给你二叉树的根节点 root ，返回其节点值的 层序遍历 。 （即逐层地，从左到右访问所有节点）。
+
+* 示例1：
+>输入：root = [1,2,2,3,4,4,3]
+>输出：[[1] [2 2] [3 4 4 3]]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func levelOrder(root *TreeNode) [][]int {
+	if root == nil {
+		return nil
+	}
+	var result [][]int
+	q := []*TreeNode{root}
+	for len(q) > 0 {
+		size := len(q)
+		tmp := make([]int, size)
+		for i := 0; i < size; i++ {
+			node := q[0]
+			q = q[1:]
+			tmp[i] = node.Val
+			if node.Left != nil {
+				q = append(q, node.Left)
+			}
+			if node.Right != nil {
+				q = append(q, node.Right)
+			}
+		}
+		result = append(result, tmp)
+	}
+	return result
+}
+
+func main() {
+	root := &TreeNode{Val: 1}
+	root.Left = &TreeNode{Val: 2}
+	root.Right = &TreeNode{Val: 2}
+	root.Left.Left = &TreeNode{Val: 3}
+	root.Left.Right = &TreeNode{Val: 4}
+	root.Right.Left = &TreeNode{Val: 4}
+	root.Right.Right = &TreeNode{Val: 3}
+	fmt.Println(levelOrder(root))
+}
+```
+
+<hr>
+
 ## 104、二叉树的最大深度
 ### 题目
 给定一个二叉树 root ，返回其最大深度。

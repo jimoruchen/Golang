@@ -1182,6 +1182,76 @@ func main() {
 
 <hr>
 
+## 101、对称二叉树
+### 题目
+给你一个二叉树的根节点 root ， 检查它是否轴对称。
+
+* 示例1：
+>输入：root = [1,2,2,3,4,4,3]
+>输出：true
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func isSymmetric(root *TreeNode) bool {
+	return isSameTree(root.Left, root.Right)
+}
+
+func isSameTree(p, q *TreeNode) bool {
+	if p == nil || q == nil {
+		return p == q
+	}
+	return p.Val == q.Val && isSameTree(p.Left, q.Right) && isSameTree(p.Right, q.Left)
+}
+
+func isSymmetric1(root *TreeNode) bool {
+	u, v := root, root
+	var q []*TreeNode
+	q = append(q, u)
+	q = append(q, v)
+	for len(q) > 0 {
+		u, v = q[0], q[1]
+		q = q[2:]
+		if u == nil && v == nil {
+			continue
+		}
+		if u == nil || v == nil {
+			return false
+		}
+		if u.Val != v.Val {
+			return false
+		}
+		q = append(q, u.Left)
+		q = append(q, v.Right)
+		q = append(q, u.Right)
+		q = append(q, v.Left)
+	}
+	return true
+}
+
+func main() {
+	root := &TreeNode{Val: 1}
+	root.Left = &TreeNode{Val: 2}
+	root.Right = &TreeNode{Val: 2}
+	root.Left.Left = &TreeNode{Val: 3}
+	root.Left.Right = &TreeNode{Val: 4}
+	root.Right.Left = &TreeNode{Val: 4}
+	root.Right.Right = &TreeNode{Val: 3}
+	fmt.Println(isSymmetric(root))
+}
+```
+
+<hr>
+
 ## 104、二叉树的最大深度
 ### 题目
 给定一个二叉树 root ，返回其最大深度。
@@ -2164,6 +2234,56 @@ func main() {
 	PrintLinkedList(list)
 	list = reverseList(list)
 	PrintLinkedList(list)
+}
+```
+
+<hr>
+
+## 226、翻转二叉树
+### 题目
+给你一棵二叉树的根节点 root ，翻转这棵二叉树，并返回其根节点。
+
+* 示例1：
+>输入：root = [4,2,7,1,3,6,9]
+>输出：[4,7,2,9,6,3,1]
+
+### 代码
+```go
+package main
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func invertTree(root *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+	root.Left, root.Right = root.Right, root.Left
+	invertTree(root.Left)
+	invertTree(root.Right)
+	return root
+}
+
+func invertTree1(root *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+	queue := []*TreeNode{root}
+	for len(queue) > 0 {
+		node := queue[0]
+		queue = queue[1:]
+		node.Left, node.Right = node.Right, node.Left
+		if node.Left != nil {
+			queue = append(queue, node.Left)
+		}
+		if node.Right != nil {
+			queue = append(queue, node.Right)
+		}
+	}
+	return root
 }
 ```
 

@@ -2944,6 +2944,65 @@ func findMaxConsecutiveOnes(nums []int) int {
 
 <hr>
 
+## 543、二叉树的直径
+### 题目
+给你一棵二叉树的根节点，返回该树的 直径 。
+二叉树的 直径 是指树中任意两个节点之间最长路径的 长度 。这条路径可能经过也可能不经过根节点 root 。
+两节点之间路径的 长度 由它们之间边数表示。
+
+* 示例1：
+>输入：root = [1,2,3,4,5]
+>输出：3
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func diameterOfBinaryTree(root *TreeNode) int {
+	ans := 0
+	var depth func(*TreeNode) int
+	depth = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		l := depth(node.Left)
+		r := depth(node.Right)
+		ans = max(ans, l+r)
+		return max(l, r) + 1
+	}
+	depth(root)
+	return ans
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func main() {
+	root := &TreeNode{Val: 1}
+	root.Left = &TreeNode{Val: 2}
+	root.Right = &TreeNode{Val: 2}
+	root.Left.Left = &TreeNode{Val: 3}
+	root.Left.Right = &TreeNode{Val: 4}
+	root.Right.Left = &TreeNode{Val: 4}
+	root.Right.Right = &TreeNode{Val: 3}
+	fmt.Println(diameterOfBinaryTree(root))
+}
+```
+
+<hr>
+
 ## 560、和为 K 的子数组
 ### 题目
 给你一个整数数组 nums 和一个整数 k ，请你统计并返回 该数组中和为 k 的子数组的个数 。

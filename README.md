@@ -1182,6 +1182,58 @@ func main() {
 
 <hr>
 
+## 98、验证二叉搜索树
+### 题目
+给你一个二叉树的根节点 root ，判断其是否是一个有效的二叉搜索树。
+
+* 示例1：
+>输入：root = [2,1,3]
+>输出：true
+
+### 代码
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func isValidBST(root *TreeNode) bool {
+	min := math.MinInt
+	var inorder func(*TreeNode) bool
+	inorder = func(node *TreeNode) bool {
+		if node == nil {
+			return true
+		}
+		if !inorder(node.Left) {
+			return false
+		}
+		if node.Val < min {
+			return false
+		}
+		min = node.Val
+		return inorder(node.Right)
+	}
+	return inorder(root)
+}
+
+func main() {
+	root := &TreeNode{Val: 2}
+	root.Left = &TreeNode{Val: 1}
+	root.Right = &TreeNode{Val: 3}
+	fmt.Println(isValidBST(root))
+}
+```
+
+<hr>
+
 ## 101、对称二叉树
 ### 题目
 给你一个二叉树的根节点 root ， 检查它是否轴对称。

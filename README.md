@@ -1182,6 +1182,58 @@ func main() {
 
 <hr>
 
+## 98、验证二叉搜索树
+### 题目
+给你一个二叉树的根节点 root ，判断其是否是一个有效的二叉搜索树。
+
+* 示例1：
+>输入：root = [2,1,3]
+>输出：true
+
+### 代码
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func isValidBST(root *TreeNode) bool {
+	min := math.MinInt
+	var inorder func(*TreeNode) bool
+	inorder = func(node *TreeNode) bool {
+		if node == nil {
+			return true
+		}
+		if !inorder(node.Left) {
+			return false
+		}
+		if node.Val < min {
+			return false
+		}
+		min = node.Val
+		return inorder(node.Right)
+	}
+	return inorder(root)
+}
+
+func main() {
+	root := &TreeNode{Val: 2}
+	root.Left = &TreeNode{Val: 1}
+	root.Right = &TreeNode{Val: 3}
+	fmt.Println(isValidBST(root))
+}
+```
+
+<hr>
+
 ## 101、对称二叉树
 ### 题目
 给你一个二叉树的根节点 root ， 检查它是否轴对称。
@@ -1372,6 +1424,69 @@ func main() {
 	root.Right.Left = &TreeNode{Val: 3}
 	result := maxDepth(root)
 	fmt.Println(result)
+}
+```
+
+<hr>
+
+## 108、将有序数组转换为二叉搜索树
+### 题目
+给你一个整数数组 nums ，其中元素已经按 升序 排列，请你将其转换为一棵 平衡 二叉搜索树。
+
+* 示例1：
+>输入：nums = [-10,-3,0,5,9]
+>输出：[0,-3,9,-10,null,5]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func sortedArrayToBST(nums []int) *TreeNode {
+	if len(nums) == 0 {
+		return nil
+	}
+	return buildBST(nums, 0, len(nums)-1)
+}
+
+func buildBST(nums []int, left, right int) *TreeNode {
+	if left > right {
+		return nil
+	}
+	mid := (left + right) / 2
+	root := &TreeNode{Val: nums[mid]}
+	root.Left = buildBST(nums, left, mid-1)
+	root.Right = buildBST(nums, mid+1, right)
+	return root
+}
+
+func inorderTraversal(root *TreeNode) []int {
+	var ans []int
+	var inorder func(root *TreeNode)
+	inorder = func(root *TreeNode) {
+		if root == nil {
+			return
+		}
+		inorder(root.Left)
+		ans = append(ans, root.Val)
+		inorder(root.Right)
+	}
+	inorder(root)
+	return ans
+}
+
+func main() {
+	nums := []int{-10, -3, 0, 5, 9}
+	root := sortedArrayToBST(nums)
+	ans := inorderTraversal(root)
+	fmt.Println(ans)
 }
 ```
 

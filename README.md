@@ -2463,6 +2463,59 @@ func invertTree1(root *TreeNode) *TreeNode {
 
 <hr>
 
+## 230、二叉树搜索树中第 K 小的元素
+### 题目
+给定一个二叉搜索树的根节点 root ，和一个整数 k ，请你设计一个算法查找其中第 k 小的元素（k 从 1 开始计数）。
+
+* 示例1：
+>输入：root = [3,1,4,null,2], k = 1
+>输出：1
+
+### 代码
+```go
+package main
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func kthSmallest(root *TreeNode, k int) int {
+	var result []int
+	var inorder func(*TreeNode)
+	inorder = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		inorder(node.Left)
+		result = append(result, node.Val)
+		inorder(node.Right)
+	}
+	inorder(root)
+	return result[k-1]
+}
+
+func kthSmallest1(root *TreeNode, k int) (ans int) {
+	var inorder func(*TreeNode)
+	inorder = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		inorder(node.Left)
+		k--
+		if k == 0 {
+			ans = node.Val
+		}
+		inorder(node.Right)
+	}
+	inorder(root)
+	return
+}
+```
+
+<hr>
+
 ## 234、回文链表
 ### 题目
 给你一个单链表的头节点 head ，请你判断该链表是否为回文链表。如果是，返回 true ；否则，返回 false 。

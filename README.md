@@ -2248,6 +2248,52 @@ func main() {
 
 <hr>
 
+## 199、二叉树的右视图
+### 题目
+给定一个二叉树的 根节点 root，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+
+* 示例1：
+>输入：root = [1,2,3,null,5,null,4]
+>输出：[1,3,4]
+
+### 代码
+```go
+package main
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+func rightSideView(root *TreeNode) []int {
+	if root == nil {
+		return nil
+	}
+	var ans []int
+	queue := []*TreeNode{root}
+	for len(queue) > 0 {
+		length := len(queue)
+		for i := 0; i < length; i++ {
+			node := queue[0]
+			queue = queue[1:]
+			if node.Left != nil {
+				queue = append(queue, node.Left)
+			}
+			if node.Right != nil {
+				queue = append(queue, node.Right)
+			}
+			if i == length-1 {
+				ans = append(ans, node.Val)
+			}
+		}
+	}
+	return ans
+}
+```
+
+<hr>
+
 ## 203、移除链表元素
 ### 题目
 给你一个链表的头节点 head 和一个整数 val ，请你删除链表中所有满足 Node.val == val 的节点，并返回 新的头节点 。

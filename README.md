@@ -1492,6 +1492,41 @@ func main() {
 
 <hr>
 
+## 114、二叉树展开为链表
+### 题目
+给你二叉树的根结点 root ，请你将它展开为一个单链表：
+展开后的单链表应该同样使用 TreeNode ，其中 right 子指针指向链表中下一个结点，而左子指针始终为 null 。
+展开后的单链表应该与二叉树 先序遍历 顺序相同。
+
+* 示例1：
+>输入：root = [1,2,5,3,4,null,6]
+>输出：[1,null,2,null,3,null,4,null,5,null,6]
+
+### 代码
+```go
+func flatten(root *TreeNode)  {
+    var tmp []*TreeNode 
+    var preorder func(*TreeNode)
+    preorder = func(node *TreeNode) {
+        if node == nil {
+            return
+        }
+        tmp = append(tmp, node)
+        preorder(node.Left)
+        preorder(node.Right)
+    }
+    preorder(root)
+    current := root
+    for i := 1; i < len(tmp); i++ {
+        current.Left = nil
+        current.Right = tmp[i]
+        current = tmp[i]
+    }
+}
+```
+
+<hr>
+
 ## 128、最长连续序列
 ### 题目
 给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。

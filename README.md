@@ -800,6 +800,55 @@ func main() {
 
 <hr>
 
+## 46、全排列
+### 题目
+给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
+
+* 示例1：
+>输入：nums = [1,2,3]
+>输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+func permute(nums []int) [][]int {
+	var path []int
+	var result [][]int
+	used := make([]bool, len(nums))
+	var backtracking func()
+	backtracking = func() {
+		if len(path) == len(nums) {
+			tmp := make([]int, len(path))
+			copy(tmp, path)
+			result = append(result, tmp)
+			return
+		}
+		for i := 0; i < len(nums); i++ {
+			if used[i] {
+				continue
+			}
+			used[i] = true
+			path = append(path, nums[i])
+			backtracking()
+			used[i] = false
+			path = path[:len(path)-1]
+		}
+	}
+	backtracking()
+	return result
+}
+
+func main() {
+	nums := []int{1, 2, 3, 4}
+	fmt.Println(permute(nums))
+}
+```
+
+<hr>
+
 ## 49、字母异位词分组
 ### 题目
 给你一个字符串数组，请你将 字母异位词 组合在一起。可以按任意顺序返回结果列表。
@@ -1059,6 +1108,72 @@ func main() {
 	nums := []int{1, 1, 2, 0, 2, 0}
 	sortColors(nums)
 	fmt.Println(nums)
+}
+```
+
+<hr>
+
+## 77、组合
+### 题目
+给定两个整数 n 和 k，返回范围 [1, n] 中所有可能的 k 个数的组合。
+你可以按 任何顺序 返回答案。
+
+* 示例1：
+>输入：n = 4, k = 2
+>输出：[[1 2] [1 3] [1 4] [2 3] [2 4] [3 4]]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+func combine(n int, k int) [][]int {
+	var path []int
+	var result [][]int
+	backtracking(n, k, 1, path, &result)
+	return result
+}
+
+func backtracking(n, k, startIndex int, path []int, result *[][]int) {
+	if len(path) == k {
+		tmp := make([]int, len(path))
+		copy(tmp, path)
+		*result = append(*result, tmp)
+		return
+	}
+	for i := startIndex; i <= n; i++ {
+		path = append(path, i)
+		backtracking(n, k, i+1, path, result)
+		path = path[:len(path)-1]
+	}
+}
+
+func combine1(n int, k int) [][]int {
+	var result [][]int
+	var path []int
+	var backtracking func(int)
+	backtracking = func(startIndex int) {
+		if len(path) == k {
+			tmp := make([]int, len(path))
+			copy(tmp, path)
+			result = append(result, tmp)
+			return
+		}
+		for i := startIndex; i <= n; i++ {
+			path = append(path, i)
+			backtracking(i + 1)
+			path = path[:len(path)-1]
+		}
+	}
+	backtracking(1)
+	return result
+}
+
+func main() {
+	n := 4
+	k := 2
+	fmt.Println(combine(n, k))
 }
 ```
 

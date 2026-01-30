@@ -1179,6 +1179,47 @@ func main() {
 
 <hr>
 
+## 78、子集
+### 题目
+给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+
+* 示例1：
+>输入：nums = [1,2,3]
+>输出：[[] [1] [1 2] [1 2 3] [1 3] [2] [2 3] [3]]
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+func subsets(nums []int) [][]int {
+	var path []int
+	var result [][]int
+	var backtracking func(int)
+	backtracking = func(startIndex int) {
+		tmp := make([]int, len(path))
+		copy(tmp, path)
+		result = append(result, tmp)
+		for i := startIndex; i < len(nums); i++ {
+			path = append(path, nums[i])
+			backtracking(i + 1)
+			path = path[:len(path)-1]
+		}
+	}
+	backtracking(0)
+	return result
+}
+
+func main() {
+	nums := []int{1, 2, 3}
+	fmt.Println(subsets(nums))
+}
+```
+
+<hr>
+
 ## 92、反转链表 II
 ### 题目
 给你单链表的头指针 head 和两个整数 left 和 right ，其中 left <= right 。请你反转从位置 left 到位置 right 的链表节点，返回 反转后的链表 。

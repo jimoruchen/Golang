@@ -207,6 +207,45 @@ func main() {
 
 <hr>
 
+## 17、电话号码的字母组合
+### 题目
+给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。答案可以按 任意顺序 返回。
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+
+* 示例1：
+>输入：digits = "23"
+>输出：["ad","ae","af","bd","be","bf","cd","ce","cf"]
+
+### 代码
+```go
+package main
+
+func letterCombinations(digits string) []string {
+	if len(digits) == 0 {
+		return []string{}
+	}
+	mapping := []string{"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"}
+	var path []byte
+	var result []string
+	var backtracking func(int)
+	backtracking = func(index int) {
+		if len(digits) == index {
+			result = append(result, string(path))
+			return
+		}
+		for _, digit := range mapping[digits[index]-'0'] {
+			path = append(path, byte(digit))
+			backtracking(index + 1)
+			path = path[:len(path)-1]
+		}
+	}
+	backtracking(0)
+	return result
+}
+```
+
+<hr>
+
 ## 19、删除链表的倒数第 N 个结点
 ### 题目
 给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。

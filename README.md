@@ -464,6 +464,45 @@ func main() {
 
 <hr>
 
+## 22、括号生成
+### 题目
+数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+
+* 示例1：
+>输入：n = 3
+>输出：["((()))","(()())","(())()","()(())","()()()"]
+
+### 代码
+```go
+package main
+
+func generateParenthesis(n int) []string {
+	var path []byte
+	var result []string
+	var backtracking func(int, int)
+	backtracking = func(left, right int) {
+		if len(path) == 2*n {
+			result = append(result, string(path))
+			return
+		}
+		if left < n {
+			path = append(path, '(')
+			backtracking(left+1, right)
+			path = path[:len(path)-1]
+		}
+		if right < left {
+			path = append(path, ')')
+			backtracking(left, right+1)
+			path = path[:len(path)-1]
+		}
+	}
+	backtracking(0, 0)
+	return result
+}
+```
+
+<hr>
+
 ## 24、两两交换链表中的节点
 ### 题目
 给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题（即，只能进行节点交换）。

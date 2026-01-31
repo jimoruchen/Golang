@@ -839,6 +839,46 @@ func main() {
 
 <hr>
 
+## 39、组合总和
+### 题目
+给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，
+找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合 ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
+
+* 示例1：
+>输入：candidates = [2,3,6,7], target = 7
+>输出：[[2,2,3],[7]]
+
+### 代码
+```go
+package main
+
+func combinationSum(candidates []int, target int) [][]int {
+	var path []int
+	var result [][]int
+	var backtracking func(int, int)
+	backtracking = func(startIndex, currentSum int) {
+		if currentSum > target {
+			return
+		}
+		if currentSum == target {
+			tmp := make([]int, len(path))
+			copy(tmp, path)
+			result = append(result, tmp)
+			return
+		}
+		for i := startIndex; i < len(candidates); i++ {
+			path = append(path, candidates[i])
+			backtracking(i, currentSum+candidates[i])
+			path = path[:len(path)-1]
+		}
+	}
+	backtracking(0, 0)
+	return result
+}
+```
+
+<hr>
+
 ## 46、全排列
 ### 题目
 给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。

@@ -3268,6 +3268,73 @@ func main() {
 
 <hr>
 
+## 301、删除无效的括号
+### 题目
+给你一个由若干括号和字母组成的字符串 s ，删除最小数量的无效括号，使得输入的字符串有效。
+返回所有可能的结果。答案可以按 任意顺序 返回。
+
+* 示例1：
+>输入：s = "()())()"
+>输出：["(())()","()()()"]
+
+### 代码
+```go
+package main
+
+func removeInvalidParentheses(s string) []string {
+	left, right := 0, 0 //要去除的 ( 和 )
+	for _, char := range s {
+		if char == '(' {
+			left++
+		} else if char == ')' {
+			if left > 0 {
+				left--
+			} else {
+				right++
+			}
+		}
+	}
+	var path []byte
+	var result []string
+	visited := make(map[string]bool)
+	var backtracking func(index, leftCount, rightCount, leftRem, rightRem int)
+	backtracking = func(index, leftCount, rightCount, leftRem, rightRem int) {
+		if index == len(s) {
+			if leftRem == 0 && rightRem == 0 {
+				str := string(path)
+				if !visited[str] {
+					visited[str] = true
+					result = append(result, str)
+				}
+			}
+			return
+		}
+		char := s[index]
+		if char == '(' && leftRem > 0 {
+			backtracking(index+1, leftCount, rightCount, leftRem-1, rightRem)
+		}
+		if char == ')' && rightRem > 0 {
+			backtracking(index+1, leftCount, rightCount, leftRem, rightRem-1)
+		}
+		path = append(path, char)
+		if char == '(' {
+			backtracking(index+1, leftCount+1, rightCount, leftRem, rightRem)
+		} else if char == ')' {
+			if rightCount < leftCount {
+				backtracking(index+1, leftCount, rightCount+1, leftRem, rightRem)
+			}
+		} else {
+			backtracking(index+1, leftCount, rightCount, leftRem, rightRem)
+		}
+		path = path[:len(path)-1]
+	}
+	backtracking(0, 0, 0, left, right)
+	return result
+}
+```
+
+<hr>
+
 ## 328、奇偶链表
 ### 题目
 给定单链表的头节点 head ，将所有索引为奇数的节点和索引为偶数的节点分别分组，保持它们原有的相对顺序，然后把偶数索引节点分组连接到奇数索引节点分组之后，返回重新排序的链表。

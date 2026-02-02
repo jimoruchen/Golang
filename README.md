@@ -501,7 +501,7 @@ func generateParenthesis(n int) []string {
 }
 ```
 
-<hr>
+<hr>E
 
 ## 24、两两交换链表中的节点
 ### 题目
@@ -1333,6 +1333,56 @@ func subsets(nums []int) [][]int {
 func main() {
 	nums := []int{1, 2, 3}
 	fmt.Println(subsets(nums))
+}
+```
+
+<hr>
+
+## 79、删除有序数组中的重复项
+### 题目
+给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false 。
+
+* 示例1：
+>输入：board = [['A','B','C','E'],['S','F','C','S'],['A','D','E','E']], word = "ABCCED"
+>输出：true
+
+### 代码
+```go
+package main
+
+func exist(board [][]byte, word string) bool {
+	m := len(board)
+	n := len(board[0])
+	if m == 0 || n == 0 || len(word) == 0 {
+		return false
+	}
+	visited := make([][]bool, m)
+	for i := range visited {
+		visited[i] = make([]bool, n)
+	}
+	var backtracking func(index, i, j int) bool
+	backtracking = func(index, i, j int) bool {
+		if i < 0 || i >= m || j < 0 || j >= n || visited[i][j] || board[i][j] != word[index] {
+			return false
+		}
+		if index == len(word)-1 {
+			return true
+		}
+		visited[i][j] = true
+		found := backtracking(index+1, i-1, j) || backtracking(index+1, i, j-1) || backtracking(index+1, i+1, j) || backtracking(index+1, i, j+1)
+		if !found {
+			visited[i][j] = false
+		}
+		return found
+	}
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			if backtracking(0, i, j) {
+				return true
+			}
+		}
+	}
+	return false
 }
 ```
 

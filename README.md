@@ -1894,6 +1894,56 @@ func main() {
 
 <hr>
 
+## 131、分割回文串
+### 题目
+给你一个字符串 s，请你将 s 分割成一些 子串，使每个子串都是 回文串 。返回 s 所有可能的分割方案。
+
+* 示例1：
+>输入：s = "aab"
+>输出：[["a","a","b"],["aa","b"]]
+
+### 代码
+```go
+package main
+
+func partition(s string) [][]string {
+	var path []string
+	var res [][]string
+	var backtracking func(startIndex int)
+	backtracking = func(startIndex int) {
+		if startIndex == len(s) {
+			tmp := make([]string, len(path))
+			copy(tmp, path)
+			res = append(res, tmp)
+		}
+		for i := startIndex; i < len(s); i++ {
+			str := s[startIndex : i+1]
+			if isPalindrome(str) {
+				path = append(path, str)
+				backtracking(i + 1)
+				path = path[:len(path)-1]
+			}
+		}
+	}
+	backtracking(0)
+	return res
+}
+
+func isPalindrome(s string) bool {
+	left, right := 0, len(s)-1
+	for left < right {
+		if s[left] != s[right] {
+			return false
+		}
+		left++
+		right--
+	}
+	return true
+}
+```
+
+<hr>
+
 ## 136、只出现一次的数字
 ### 题目
 给你一个 非空 整数数组 nums ，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
@@ -3795,3 +3845,46 @@ func main() {
 	PrintLinkedList(middle)
 }
 ```
+
+<hr>
+
+## LCR018、验证回文串
+### 题目
+给定一个字符串 s ，验证 s 是否是 回文串 ，只考虑字母和数字字符，可以忽略字母的大小写。
+本题中，将空字符串定义为有效的 回文串 。
+
+* 示例1：
+>输入：s = "A man, a plan, a canal: Panama"
+>输出：true
+
+### 代码
+````go
+package main
+
+import "strings"
+
+func isPalindrome(s string) bool {
+	left, right := 0, len(s)-1
+	s = strings.ToLower(s)
+	for left < right {
+		for left < right && !isVaild(s[left]) {
+			left++
+		}
+		for left < right && !isVaild(s[right]) {
+			right--
+		}
+		if left < right && s[left] != s[right] {
+			return false
+		}
+		left++
+		right--
+	}
+	return true
+}
+
+func isVaild(b byte) bool {
+	return (b >= '0' && b <= '9') || (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z')
+}
+````
+
+<hr>

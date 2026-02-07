@@ -124,3 +124,78 @@ func main() {
 
 B,D正确，A,C中单引号 ' 只能用于定义单个字符（rune），不能用于字符串。
 
+## strings包
+`strings.EqualFold(s, t string) bool`
+忽略大小写比较两个字符串（支持 Unicode）。
+`strings.EqualFold("Hello", "HELLO") // true
+`
+
+`strings.Contains(s, substr string) bool`
+判断是否包含子串：
+`strings.Contains("hello", "ll") // true`
+
+`strings.HasPrefix(s, prefix string) bool`
+是否以某前缀开头：
+`strings.HasPrefix("https://example.com", "https") // true`
+
+`strings.HasSuffix(s, suffix=str) bool`
+是否以某后缀结尾：
+`strings.HasSuffix("test.go", ".go") // true`
+
+`strings.Index(s, substr string) int`
+返回子串第一次出现的位置，未找到返回 -1：
+`strings.Index("hello", "l") // 2`
+
+`strings.Split(s, sep string) []string`
+按分隔符切分：
+`strings.Split("a,b,c", ",") // []string{"a", "b", "c"}`
+
+`strings.Fields(s string) []string`
+按空白字符（空格、制表符、换行等）切分，自动忽略多余空白：
+`strings.Fields("  a  b\tc\n") // ["a", "b", "c"]`
+
+`strings.SplitN(s, sep string, n int) []string`
+最多切分成 n 个部分：
+`strings.SplitN("a,b,c,d", ",", 3) // ["a", "b", "c,d"]`
+
+`strings.Join(elems []string, sep string) string`
+用分隔符连接字符串切片：
+`strings.Join([]string{"a", "b", "c"}, "-") // "a-b-c"`
+
+`strings.Builder`
+```go
+var sb strings.Builder
+sb.WriteString("hello")
+sb.WriteString(" ")
+sb.WriteString("world")
+result := sb.String() // "hello world"
+```
+
+`strings.TrimSpace(s string) string`
+去除首尾所有空白字符（包括 \t, \n, 空格等）：
+`strings.TrimSpace(" \t hello \n ") // "hello"`
+
+`strings.Trim(s, cutset string) string`
+去除首尾指定字符集中的任意字符：
+`strings.Trim("!!hello!!", "!") // "hello"`
+
+`strings.TrimPrefix(s, prefix string) string`
+去除前缀（如果存在）：
+`strings.TrimPrefix("https://example.com", "https://") // "example.com"`
+
+`strings.TrimSuffix(s, suffix string) string`
+去除后缀（如果存在）：
+`strings.TrimSuffix("file.txt.bak", ".bak") // "file.txt"`
+
+`strings.Replace(s, old, new string, n int) string`
+替换前 n 个 old 为 new；n = -1 表示全部替换：
+`strings.Replace("aabbcc", "b", "x", -1) // "aaxxcc"`
+`strings.ReplaceAll(s, old, new) // "aaxxcc"`
+
+`strings.Repeat(s string, count int) string`
+重复字符串：
+`strings.Repeat("ha", 3) // "hahaha"`
+
+`strings.ToUpper(s string) string / strings.ToLower(s string) string`
+转大写/小写（仅处理 ASCII）：
+`strings.ToUpper("hello") // "HELLO"`

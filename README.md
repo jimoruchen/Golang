@@ -918,6 +918,39 @@ func combinationSum(candidates []int, target int) [][]int {
 
 <hr>
 
+## 45、跳跃游戏 Ⅱ
+### 题目
+给定一个长度为 n 的 0 索引整数数组 nums。初始位置在下标 0。
+每个元素 nums[i] 表示从索引 i 向后跳转的最大长度。换句话说，如果你在索引 i 处，你可以跳转到任意 (i + j) 处：
+0 <= j <= nums[i] 且
+i + j < n
+返回到达 n - 1 的最小跳跃次数。测试用例保证可以到达 n - 1。
+
+* 示例1：
+>输入：nums = [2,3,1,1,4]
+>输出：2
+
+### 代码
+```go
+package main
+
+func jump(nums []int) int {
+	maxLength := 0
+	right := 0
+	count := 0
+	for i := 0; i < len(nums)-1; i++ {
+		maxLength = max(maxLength, i+nums[i])
+		if i == right {
+			right = maxLength
+			count++
+		}
+	}
+	return count
+}
+```
+
+<hr>
+
 ## 46、全排列
 ### 题目
 给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
@@ -1041,6 +1074,36 @@ func maxSubArray(nums []int) int {
 
 func main() {
 	fmt.Println(maxSubArray([]int{-2, 1, -3, 4, -1, 2, 1, -5, 4}))
+}
+```
+
+<hr>
+
+## 55、跳跃游戏
+### 题目
+给你一个非负整数数组 nums ，你最初位于数组的 第一个下标 。数组中的每个元素代表你在该位置可以跳跃的最大长度。
+判断你是否能够到达最后一个下标，如果可以，返回 true ；否则，返回 false 。
+
+* 示例1：
+>输入：nums = [2,3,1,1,4]
+>输出：true
+
+### 代码
+```go
+package main
+
+func canJump(nums []int) bool {
+	maxLength := 0
+	for i := 0; i < len(nums); i++ {
+		if maxLength >= len(nums)-1 {
+			return true
+		}
+		if i > maxLength {
+			return false
+		}
+		maxLength = max(maxLength, i+nums[i])
+	}
+	return true
 }
 ```
 
@@ -1846,6 +1909,36 @@ func flatten(root *TreeNode)  {
         current.Right = tmp[i]
         current = tmp[i]
     }
+}
+```
+
+<hr>
+
+## 121、买卖股票的最佳时机
+### 题目
+给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。
+你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。
+返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+
+* 示例1：
+>输入：[7,1,5,3,6,4]
+>输出：5
+
+### 代码
+```go
+package main
+
+func maxProfit(prices []int) int {
+	profit := 0
+	minPrice := prices[0]
+	for i := 1; i < len(prices); i++ {
+		if prices[i] < minPrice {
+			minPrice = prices[i]
+		} else {
+			profit = max(profit, prices[i]-minPrice)
+		}
+	}
+	return profit
 }
 ```
 
@@ -3795,6 +3888,43 @@ func main() {
 	temperatures := []int{73, 74, 75, 71, 69, 72, 76, 73}
 	ans := dailyTemperatures(temperatures)
 	fmt.Println(ans)
+}
+```
+
+<hr>
+
+## 763、跳跃游戏 Ⅱ
+### 题目
+给你一个字符串 s 。我们要把这个字符串划分为尽可能多的片段，同一字母最多出现在一个片段中。
+例如，字符串 "ababcc" 能够被分为 ["abab", "cc"]，但类似 ["aba", "bcc"] 或 ["ab", "ab", "cc"] 的划分是非法的。
+注意，划分结果需要满足：将所有划分结果按顺序连接，得到的字符串仍然是 s 。
+返回一个表示每个字符串片段的长度的列表。
+
+* 示例1：
+>输入：s = "ababcbacadefegdehijhklij"
+>输出：[9,7,8]
+
+### 代码
+```go
+package main
+
+func partitionLabels(s string) []int {
+	var ans []int
+	last := [26]int{}
+	for i, c := range s {
+		last[c-'a'] = i
+	}
+	start, end := 0, 0
+	for i, c := range s {
+		if last[c-'a'] > end {
+			end = last[c-'a']
+		}
+		if i == end {
+			ans = append(ans, end-start+1)
+			start = end + 1
+		}
+	}
+	return ans
 }
 ```
 

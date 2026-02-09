@@ -2961,6 +2961,75 @@ func main() {
 
 <hr>
 
+## 215、数组中的第K个最大元素
+### 题目
+给定整数数组 nums 和整数 k，请返回数组中第 k 个最大的元素。
+请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+
+* 示例1：
+>输入：[3,2,1,5,6,4], k = 2
+>输出：5
+
+### 代码
+```go
+package main
+
+import "math/rand"
+
+func findKthLargest(nums []int, k int) int {
+	return quickSort(nums, 0, len(nums)-1, len(nums)-k)
+}
+
+//func findKthLargest(nums []int, k int) int {
+//	quickSort(nums, 0, len(nums) - 1)
+//	return nums[len(nums) - k]
+//}
+//
+//func quickSort(nums []int, left, right int) {
+//	if left >= right {
+//		return
+//	}
+//	pivot := partition(nums, left, right)
+//	quickSort(nums, left, pivot - 1)
+//	quickSort(nums, pivot + 1, right)
+//}
+
+func quickSort(nums []int, left, right, k int) int {
+	if left == right {
+		return nums[left]
+	}
+	pivot := partition(nums, left, right)
+	if pivot == k {
+		return nums[pivot]
+	} else if pivot > k {
+		return quickSort(nums, left, pivot-1, k)
+	} else {
+		return quickSort(nums, pivot+1, right, k)
+	}
+}
+
+func partition(nums []int, left, right int) int {
+	i, j := left, right
+	index := left + rand.Intn(right-left+1)
+	nums[index], nums[i] = nums[i], nums[index]
+	for i < j {
+		for i < j && nums[j] >= nums[left] {
+			j--
+		}
+		for i < j && nums[i] <= nums[left] {
+			i++
+		}
+		if i < j {
+			nums[i], nums[j] = nums[j], nums[i]
+		}
+	}
+	nums[i], nums[left] = nums[left], nums[i]
+	return i
+}
+```
+
+<hr>
+
 ## 226、翻转二叉树
 ### 题目
 给你一棵二叉树的根节点 root ，翻转这棵二叉树，并返回其根节点。

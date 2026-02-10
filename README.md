@@ -3879,6 +3879,64 @@ func findMaxConsecutiveOnes(nums []int) int {
 
 <hr>
 
+## 509、斐波拉契数
+### 题目
+斐波那契数 （通常用 F(n) 表示）形成的序列称为 斐波那契数列 。该数列由 0 和 1 开始，后面的每一项数字都是前面两项数字的和。也就是：
+F(0) = 0，F(1) = 1
+F(n) = F(n - 1) + F(n - 2)，其中 n > 1
+给定 n ，请计算 F(n) 。
+
+* 示例1：
+>输入：n = 2
+>输出：1
+
+### 代码
+```go
+package main
+
+func fib(n int) int {
+	// maps := make(map[int]int)
+	// return fibDp1(n, maps)
+	return fibDp3(n)
+}
+
+func fibDp(n int, maps map[int]int) int {
+	if n <= 1 {
+		return n
+	}
+	if v, ok := maps[n]; ok {
+		return v
+	}
+	maps[n] = fibDp(n-1, maps) + fibDp(n-2, maps)
+	return maps[n]
+}
+
+func fibDp2(n int) int {
+	if n <= 1 {
+		return n
+	}
+	dp := make([]int, n+1)
+	dp[0], dp[1] = 0, 1
+	for i := 2; i <= n; i++ {
+		dp[i] = dp[i-1] + dp[i-2]
+	}
+	return dp[n]
+}
+
+func fibDp3(n int) int {
+	if n <= 1 {
+		return n
+	}
+	prev, cur := 0, 1
+	for i := 2; i <= n; i++ {
+		prev, cur = cur, prev+cur
+	}
+	return cur
+}
+```
+
+<hr>
+
 ## 543、二叉树的直径
 ### 题目
 给你一棵二叉树的根节点，返回该树的 直径 。

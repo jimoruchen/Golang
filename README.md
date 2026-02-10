@@ -3611,6 +3611,57 @@ func main() {
 
 <hr>
 
+## 347、前 K 个高频元素
+### 题目
+给你一个整数数组 nums 和一个整数 k ，请你返回其中出现频率前 k 高的元素。你可以按 任意顺序 返回答案。
+
+* 示例1：
+>输入：nums = [1,1,1,2,2,3], k = 2
+>输出：[1,2]
+
+### 代码
+```go
+// func topKFrequent(nums []int, k int) []int {
+//     maps := make(map[int]int)
+//     for _, v := range nums {
+//         maps[v]++
+//     }
+//     var keys []int
+//     for k := range maps {
+//         keys = append(keys, k)
+//     }
+//     sort.Slice(keys, func(i, j int) bool {
+//         return maps[keys[i]] > maps[keys[j]]
+//     })
+//     return keys[:k]
+// }
+
+func topKFrequent(nums []int, k int) []int {
+    var ans []int
+    maps := make(map[int]int)
+    for _, v := range nums {
+        maps[v]++
+    }
+    type kv struct {
+        k int
+        v int
+    }
+    var KV []kv
+    for k, v := range maps {
+        KV = append(KV, kv{k, v})
+    }
+    sort.Slice(KV, func(i, j int) bool {
+        return KV[i].v > KV[j].v
+    })
+    for i := 0; i < k; i++ {
+        ans = append(ans, KV[i].k)
+    }
+    return ans
+}
+```
+
+<hr>
+
 ## 394、字符串解码
 ### 题目
 给定一个经过编码的字符串，返回它解码后的字符串。

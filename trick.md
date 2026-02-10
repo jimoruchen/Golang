@@ -232,3 +232,44 @@ tmp = int(s[i] - '0')
 ```go
 str += string(ch)
 ```
+
+## 对map按照v排序
+```go
+// 提取所有 key
+keys := make([]string, 0, len(m))
+for k := range m {
+    keys = append(keys, k)
+}
+
+// 按对应的 value 排序 keys
+sort.Slice(keys, func(i, j int) bool {
+    return m[keys[i]] > m[keys[j]] // 降序
+})
+
+// 使用
+for _, k := range keys {
+    fmt.Printf("%s: %d\n", k, m[k])
+}
+```
+```go
+// 1. 将 map 转为切片
+type kv struct {
+    Key   string
+    Value int
+}
+var ss []kv
+for k, v := range m {
+    ss = append(ss, kv{k, v})
+}
+
+// 2. 按 value 降序排序（第 K 大）
+sort.Slice(ss, func(i, j int) bool {
+    return ss[i].Value > ss[j].Value // > 降序，< 升序
+})
+
+// 3. 打印结果
+fmt.Println("按 value 降序排序:")
+for _, pair := range ss {
+    fmt.Printf("%s: %d\n", pair.Key, pair.Value)
+}
+```

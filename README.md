@@ -2047,6 +2047,64 @@ func flatten(root *TreeNode)  {
 
 <hr>
 
+## 118、杨辉三角
+### 题目
+给定一个非负整数 numRows，生成「杨辉三角」的前 numRows 行。
+
+在「杨辉三角」中，每个数是它左上方和右上方的数的和。
+
+* 示例1：
+>输入：numRows = 5
+>输出：[[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]
+
+### 代码
+```go
+package main
+
+// func generate(numRows int) [][]int {
+//     if numRows == 1 {
+//         return [][]int{{1}}
+//     }
+//     if numRows == 2 {
+//         return [][]int{{1}, {1, 1}}
+//     }
+//     var ans [][]int
+//     dp := make([][]int, numRows)
+//     for i := range dp {
+//         dp[i] = make([]int, numRows)
+//     }
+//     dp[0][0] = 1
+//     dp[1][0] = 1
+//     dp[1][1] = 1
+//     for i := 2; i < numRows; i++ {
+//         dp[i][0] = 1
+//         dp[i][i] = 1
+//         for j := 1; j <= i - 1; j++ {
+//             dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j]
+//         }
+//     }
+//     for i := 0; i < numRows; i++ {
+//         ans = append(ans, dp[i][:i + 1])
+//     }
+//     return ans
+// }
+
+func generate(numRows int) [][]int {
+	dp := make([][]int, numRows)
+	for i := range dp {
+		dp[i] = make([]int, i+1)
+		dp[i][0] = 1
+		dp[i][i] = 1
+		for j := 1; j < i; j++ {
+			dp[i][j] = dp[i-1][j-1] + dp[i-1][j]
+		}
+	}
+	return dp
+}
+```
+
+<hr>
+
 ## 121、买卖股票的最佳时机
 ### 题目
 给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。

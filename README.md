@@ -62,6 +62,85 @@ func main() {
 
 <hr>
 
+## 2、两数相加
+### 题目
+给你两个 非空 的链表，表示两个非负的整数。它们每位数字都是按照 逆序 的方式存储的，并且每个节点只能存储 一位 数字。
+请你将两个数相加，并以相同形式返回一个表示和的链表。
+你可以假设除了数字 0 之外，这两个数都不会以 0 开头。
+
+* 示例1：
+>输入：l1 = [2,4,3], l2 = [5,6,4]
+>输出：[7,0,8]
+>解释：342 + 465 = 807.
+
+### 代码
+```go
+package main
+
+import "fmt"
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+	dummy := &ListNode{}
+	cur := dummy
+	carry := 0
+	for l1 != nil || l2 != nil {
+		count := carry
+		if l1 != nil {
+			count += l1.Val
+			l1 = l1.Next
+		}
+		if l2 != nil {
+			count += l2.Val
+			l2 = l2.Next
+		}
+		cur.Next = &ListNode{Val: count % 10}
+		carry = count / 10
+		cur = cur.Next
+	}
+	if carry > 0 {
+		cur.Next = &ListNode{Val: carry}
+	}
+	return dummy.Next
+}
+
+func CreateLinkedList(nums []int) *ListNode {
+	head := &ListNode{Val: nums[0]}
+	cur := head
+	for i := 1; i < len(nums); i++ {
+		cur.Next = &ListNode{Val: nums[i]}
+		cur = cur.Next
+	}
+	return head
+}
+
+func PrintLinkedList(head *ListNode) {
+	cur := head
+	for cur != nil {
+		fmt.Printf("%d->", cur.Val)
+		cur = cur.Next
+	}
+	fmt.Println("nil")
+}
+
+func main() {
+	var nums1 = []int{2, 4, 3}
+	var nums2 = []int{5, 6, 4}
+	l1 := CreateLinkedList(nums1)
+	l2 := CreateLinkedList(nums2)
+	PrintLinkedList(l1)
+	PrintLinkedList(l2)
+	head := addTwoNumbers(l1, l2)
+	PrintLinkedList(head)
+}
+```
+
+<hr>
+
 ## 3、无重复字符的最长子串
 ### 题目
 给定一个字符串 s ，请你找出其中不含有重复字符的 最长子串的长度。
@@ -94,6 +173,21 @@ func lengthOfLongestSubstring(s string) int {
 		count = max(count, right-left+1)
 	}
 	return count
+}
+
+func lengthOfLongestSubstring1(s string) int {
+	maps := make(map[byte]bool)
+	left := 0
+	res := 0
+	for right := 0; right < len(s); right++ {
+		for maps[s[right]] {
+			maps[s[left]] = false
+			left++
+		}
+		maps[s[right]] = true
+		res = max(res, right - left + 1)
+	}
+	return res
 }
 
 func main() {

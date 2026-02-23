@@ -2981,6 +2981,39 @@ func main() {
 
 <hr>
 
+## 198、打家劫舍
+### 题目
+你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，
+如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
+
+* 示例1：
+>输入：[1,2,3,1]
+>输出：4
+
+### 代码
+```go
+package main
+
+func rob(nums []int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+	if len(nums) == 1 {
+		return nums[0]
+	}
+	dp := make([]int, len(nums))
+	dp[0] = nums[0]
+	dp[1] = max(nums[0], nums[1])
+	for i := 2; i < len(nums); i++ {
+		dp[i] = max(dp[i-1], dp[i-2]+nums[i])
+	}
+	return dp[len(nums)-1]
+}
+```
+
+<hr>
+
 ## 199、二叉树的右视图
 ### 题目
 给定一个二叉树的 根节点 root，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
@@ -4041,6 +4074,90 @@ func decodeString3(s string) string {
 func main() {
 	s := "3[a2[c]]"
 	fmt.Println(decodeString(s))
+}
+```
+
+<hr>
+
+## 416、分割等和子集
+### 题目
+给你一个 只包含正整数 的 非空 数组 nums 。请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+
+* 示例1：
+>输入：nums = [1,5,11,5]
+>输出：true
+
+### 代码
+```go
+package main
+
+// func canPartition(nums []int) bool {
+//     // 1 5 12 3
+//     sum := 0
+//     for _, num := range nums {
+//         sum += num
+//     }
+//     if sum % 2 != 0 {
+//         return false
+//     }
+//     sum = sum / 2
+//     dp := make([][]int, len(nums))
+//     for i := range dp {
+//         dp[i] = make([]int, sum+1)
+//     }
+//     for j := 0; j <= sum; j++ {
+//         if j >= nums[0] {
+//             dp[0][j] = nums[0]
+//         }
+//     }
+//     for i := 1; i < len(nums); i++ {
+//         for j := 0; j <= sum; j++ {
+//             if j < nums[i] {
+//                 dp[i][j] = dp[i-1][j]
+//             } else {
+//                 dp[i][j] = max(dp[i-1][j], dp[i-1][j-nums[i]] + nums[i])
+//             }
+//         }
+//     }
+//     return dp[len(nums)-1][sum] == sum
+// }
+
+// func canPartition(nums []int) bool {
+//     // 1 5 12 3
+//     sum := 0
+//     for _, num := range nums {
+//         sum += num
+//     }
+//     if sum % 2 != 0 {
+//         return false
+//     }
+//     sum = sum / 2
+//     dp := make([]int, sum+1)
+//     for i := 1; i < len(nums); i++ {
+//         for j := sum; j >= nums[i]; j-- {
+//             dp[j] = max(dp[j], dp[j-nums[i]]+nums[i])
+//         }
+//     }
+//     return dp[sum] == sum
+// }
+
+func canPartition(nums []int) bool {
+	// 1 5 12 3
+	sum := 0
+	for _, num := range nums {
+		sum += num
+	}
+	if sum%2 != 0 {
+		return false
+	}
+	sum = sum / 2
+	dp := make([]int, sum+1)
+	for i := 1; i < len(nums); i++ {
+		for j := sum; j >= nums[i]; j-- {
+			dp[j] = max(dp[j], dp[j-nums[i]]+nums[i])
+		}
+	}
+	return dp[sum] == sum
 }
 ```
 

@@ -4609,6 +4609,40 @@ func main() {
 
 <hr>
 
+## 1049、最后一块石头的重量 II
+### 题目
+有一堆石头，用整数数组 stones 表示。其中 stones[i] 表示第 i 块石头的重量。
+每一回合，从中选出任意两块石头，然后将它们一起粉碎。假设石头的重量分别为 x 和 y，且 x <= y。那么粉碎的可能结果如下：
+如果 x == y，那么两块石头都会被完全粉碎；
+如果 x != y，那么重量为 x 的石头将会完全粉碎，而重量为 y 的石头新重量为 y-x。
+最后，最多只会剩下一块 石头。返回此石头 最小的可能重量 。如果没有石头剩下，就返回 0。
+
+* 示例1：
+>输入：stones = [2,7,4,1,8,1]
+>输出：1
+
+### 代码
+```go
+package main
+
+func lastStoneWeightII(stones []int) int {
+	sum := 0
+	for _, num := range stones {
+		sum += num
+	}
+	target := sum / 2
+	dp := make([]int, target+1)
+	for _, num := range stones {
+		for j := target; j >= num; j-- {
+			dp[j] = max(dp[j], dp[j-num]+num)
+		}
+	}
+	return sum - 2*dp[target]
+}
+```
+
+<hr>
+
 ## LCR018、验证回文串
 ### 题目
 给定一个字符串 s ，验证 s 是否是 回文串 ，只考虑字母和数字字符，可以忽略字母的大小写。

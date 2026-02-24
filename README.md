@@ -4255,6 +4255,51 @@ func findMaxConsecutiveOnes(nums []int) int {
 
 <hr>
 
+## 494、目标和
+### 题目
+给你一个非负整数数组 nums 和一个整数 target 。
+向数组中的每个整数前添加 '+' 或 '-' ，然后串联起所有整数，可以构造一个 表达式 ：
+例如，nums = [2, 1] ，可以在 2 之前添加 '+' ，在 1 之前添加 '-' ，然后串联起来得到表达式 "+2-1" 。
+返回可以通过上述方法构造的、运算结果等于 target 的不同 表达式 的数目。
+
+* 示例1：
+>输入：nums = [1,1,1,1,1], target = 3
+>输出：5
+
+### 代码
+```go
+package main
+
+func findTargetSumWays(nums []int, target int) int {
+	// P N  P+N=S P-N=T P=(S+T)/2
+	sum := 0
+	for _, num := range nums {
+		sum += num
+	}
+	if (sum+target)%2 != 0 || sum < abs(target) {
+		return 0
+	}
+	ans := (sum + target) / 2
+	dp := make([]int, ans+1)
+	dp[0] = 1
+	for _, num := range nums {
+		for j := ans; j >= num; j-- {
+			dp[j] = dp[j] + dp[j-num]
+		}
+	}
+	return dp[ans]
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+```
+
+<hr>
+
 ## 509、斐波拉契数
 ### 题目
 斐波那契数 （通常用 F(n) 表示）形成的序列称为 斐波那契数列 。该数列由 0 和 1 开始，后面的每一项数字都是前面两项数字的和。也就是：

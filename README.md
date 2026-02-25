@@ -3811,6 +3811,40 @@ func removeInvalidParentheses(s string) []string {
 
 <hr>
 
+## 322、零钱兑换
+### 题目
+给你一个整数数组 coins ，表示不同面额的硬币；以及一个整数 amount ，表示总金额。
+计算并返回可以凑成总金额所需的 最少的硬币个数 。如果没有任何一种硬币组合能组成总金额，返回 -1 。
+你可以认为每种硬币的数量是无限的。
+
+* 示例1：
+>输入：coins = [1, 2, 5], amount = 11
+>输出：3
+
+### 代码
+```go
+package main
+
+func coinChange(coins []int, amount int) int {
+	dp := make([]int, amount+1) // dp[i],金额为i所需的硬币数
+	for i := 1; i <= amount; i++ {
+		dp[i] = amount + 1
+	}
+	dp[0] = 0
+	for _, num := range coins {
+		for j := num; j <= amount; j++ {
+			dp[j] = min(dp[j], dp[j-num]+1)
+		}
+	}
+	if dp[amount] > amount {
+		return -1
+	}
+	return dp[amount]
+}
+```
+
+<hr>
+
 ## 328、奇偶链表
 ### 题目
 给定单链表的头节点 head ，将所有索引为奇数的节点和索引为偶数的节点分别分组，保持它们原有的相对顺序，然后把偶数索引节点分组连接到奇数索引节点分组之后，返回重新排序的链表。
@@ -3921,6 +3955,35 @@ func topKFrequent(nums []int, k int) []int {
         ans = append(ans, KV[i].k)
     }
     return ans
+}
+```
+
+<hr>
+
+## 377、组合总和 Ⅳ
+### 题目
+给你一个由 不同 整数组成的数组 nums ，和一个目标整数 target 。请你从 nums 中找出并返回总和为 target 的元素排列的个数。
+题目数据保证答案符合 32 位整数范围。
+
+* 示例1：
+>输入：nums = [1,2,3], target = 4
+>输出：7
+
+### 代码
+```go
+package main
+
+func combinationSum4(nums []int, target int) int {
+	dp := make([]int, target+1)
+	dp[0] = 1
+	for i := 0; i <= target; i++ {
+		for _, num := range nums {
+			if i >= num {
+				dp[i] = dp[i] + dp[i-num]
+			}
+		}
+	}
+	return dp[target]
 }
 ```
 
@@ -4353,6 +4416,35 @@ func fibDp3(n int) int {
 		prev, cur = cur, prev+cur
 	}
 	return cur
+}
+```
+
+<hr>
+
+## 518、零钱兑换 II
+### 题目
+给你一个整数数组 coins 表示不同面额的硬币，另给一个整数 amount 表示总金额。
+请你计算并返回可以凑成总金额的硬币组合数。如果任何硬币组合都无法凑出总金额，返回 0 。
+假设每一种面额的硬币有无限个。
+题目数据保证结果符合 32 位带符号整数。
+
+* 示例1：
+>输入：amount = 5, coins = [1, 2, 5]
+>输出：4
+
+### 代码
+```go
+package main
+
+func change(amount int, coins []int) int {
+	dp := make([]int, amount+1)
+	dp[0] = 1
+	for _, coin := range coins {
+		for j := coin; j <= amount; j++ {
+			dp[j] = dp[j] + dp[j-coin]
+		}
+	}
+	return dp[amount]
 }
 ```
 

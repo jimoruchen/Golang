@@ -2371,6 +2371,41 @@ func copyRandomList1(head *Node) *Node {
 
 <hr>
 
+## 139、单词拆分
+### 题目
+给你一个字符串 s 和一个字符串列表 wordDict 作为字典。如果可以利用字典中出现的一个或多个单词拼接出 s 则返回 true。
+注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。
+
+* 示例1：
+>输入：s = "leetcode", wordDict = ["leet", "code"]
+>输出：true
+
+### 代码
+```go
+package main
+
+func wordBreak(s string, wordDict []string) bool {
+	maps := make(map[string]bool)
+	for _, str := range wordDict {
+		maps[str] = true
+	}
+	dp := make([]bool, len(s)+1)
+	// dp[i] 表示 s[0:i] 能否被拆分
+	dp[0] = true
+	for i := 1; i <= len(s); i++ {
+		for j := 0; j < i; j++ {
+			if dp[j] && maps[s[j:i]] {
+				dp[i] = true
+				break
+			}
+		}
+	}
+	return dp[len(s)]
+}
+```
+
+<hr>
+
 ## 141、环形链表
 ### 题目
 给你一个链表的头节点 head ，判断链表中是否有环。

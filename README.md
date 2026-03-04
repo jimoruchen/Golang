@@ -4645,6 +4645,54 @@ func main() {
 
 <hr>
 
+## 674、最长连续递增序列
+### 题目
+给定一个未经排序的整数数组，找到最长且 连续递增的子序列，并返回该序列的长度。
+连续递增的子序列 可以由两个下标 l 和 r（l < r）确定，如果对于每个 l <= i < r，都有 nums[i] < nums[i + 1] ，那么子序列 [nums[l], nums[l + 1], ..., nums[r - 1], nums[r]] 就是连续递增子序列。
+
+* 示例1：
+>输入：nums = [1,3,5,4,7]
+>输出：3
+
+### 代码
+```go
+package main
+
+// func findLengthOfLCIS(nums []int) int {
+//     ans := 1
+//     tmp := 1
+//     for i := 1; i < len(nums); i++ {
+//         for j := i; j > 0; j-- {
+//             if nums[j] > nums[j-1] {
+//                 tmp++
+//             } else {
+//                 break
+//             }
+//         }
+//         ans = max(ans, tmp)
+//         tmp = 1
+//     }
+//     return ans
+// }
+
+func findLengthOfLCIS(nums []int) int {
+	ans := 1
+	dp := make([]int, len(nums))
+	dp[0] = 1
+	for i := 1; i < len(nums); i++ {
+		if nums[i] > nums[i-1] {
+			dp[i] = dp[i-1] + 1
+		} else {
+			dp[i] = 1
+		}
+		ans = max(ans, dp[i])
+	}
+	return ans
+}
+```
+
+<hr>
+
 ## 739、每日温度
 ### 题目
 给定一个整数数组 temperatures ，表示每天的温度，返回一个数组 answer ，其中 answer[i] 是指对于第 i 天，下一个更高温度出现在几天后。如果气温在这之后都不会升高，请在该位置用 0 来代替。

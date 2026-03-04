@@ -3810,6 +3810,39 @@ func main() {
 
 <hr>
 
+## 300、最长递增子序列
+### 题目
+给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+
+* 示例1：
+>输入：nums = [10,9,2,5,3,7,101,18]
+>输出：4
+
+### 代码
+```go
+package main
+
+func lengthOfLIS(nums []int) int {
+	result := 1
+	dp := make([]int, len(nums))
+	for i := range dp {
+		dp[i] = 1
+	}
+	for i := 1; i < len(nums); i++ {
+		for j := 0; j < i; j++ {
+			if nums[i] > nums[j] {
+				dp[i] = max(dp[j]+1, dp[i])
+			}
+		}
+		result = max(result, dp[i])
+	}
+	return result
+}
+```
+
+<hr>
+
 ## 301、删除无效的括号
 ### 题目
 给你一个由若干括号和字母组成的字符串 s ，删除最小数量的无效括号，使得输入的字符串有效。

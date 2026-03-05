@@ -2698,6 +2698,39 @@ func main() {
 
 <hr>
 
+## 152、乘积最大数组
+### 题目
+给你一个整数数组 nums ，请你找出数组中乘积最大的非空连续 子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+测试用例的答案是一个 32-位 整数。
+请注意，一个只包含一个元素的数组的乘积是这个元素的值。
+
+* 示例1：
+>输入：nums = [2,3,-2,4]
+>输出：6
+
+### 代码
+```go
+package main
+
+func maxProduct(nums []int) int {
+	ans := nums[0]
+	maxdp := make([]int, len(nums))
+	mindp := make([]int, len(nums))
+	maxdp[0] = nums[0]
+	mindp[0] = nums[0]
+	for i := 1; i < len(nums); i++ {
+		curmax := maxdp
+		curmin := mindp
+		maxdp[i] = max(curmax[i-1]*nums[i], max(curmin[i-1]*nums[i], nums[i]))
+		mindp[i] = min(curmax[i-1]*nums[i], min(curmin[i-1]*nums[i], nums[i]))
+		ans = max(ans, maxdp[i])
+	}
+	return ans
+}
+```
+
+<hr>
+
 ## 153、寻找旋转排序数组中的最小值
 ### 题目
 已知一个长度为 n 的数组，预先按照升序排列，经由 1 到 n 次 旋转 后，得到输入数组。

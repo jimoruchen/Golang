@@ -199,6 +199,41 @@ func main() {
 
 <hr>
 
+## 5、最长回文子串
+### 题目
+给你一个字符串 s，找到 s 中最长的 回文 子串。
+
+* 示例1：
+>输入：s = "babad"
+>输出："bab"
+
+### 代码
+```go
+package main
+
+func longestPalindrome(s string) string {
+	var ans string
+	length := 0
+	expand := func(left, right int) {
+		for left >= 0 && right < len(s) && s[left] == s[right] {
+			if right-left+1 > length {
+				length = right - left + 1
+				ans = s[left : right+1]
+			}
+			left--
+			right++
+		}
+	}
+	for i := 0; i < len(s); i++ {
+		expand(i, i)
+		expand(i, i+1)
+	}
+	return ans
+}
+```
+
+<hr>
+
 ## 11、盛最多水的容器
 ### 题目
 给定一个长度为 n 的整数数组 height 。有 n 条垂线，第 i 条线的两个端点是 (i, 0) 和 (i, height[i]) 。  

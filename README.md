@@ -4995,3 +4995,81 @@ func isVaild(b byte) bool {
 ````
 
 <hr>
+
+## LCR020、回文子串
+### 题目
+给定一个字符串 s ，请计算这个字符串中有多少个回文子字符串。
+具有不同开始位置或结束位置的子串，即使是由相同的字符组成，也会被视作不同的子串。
+
+* 示例1：
+>输入：s = "abc"
+>输出：3
+
+### 代码
+```go
+package main
+
+// func countSubstrings(s string) int {
+//     ans := 0
+//     for i := 0; i < len(s); i++ {
+//         for j := i + 1; j <= len(s); j++ {
+//             if isPalindrome(s[i:j]) {
+//                 ans++
+//             }
+//         }
+//     }
+//     return ans
+// }
+// func isPalindrome(s string) bool {
+//     left := 0
+//     right := len(s) - 1
+//     for left < right {
+//         if s[left] != s[right] {
+//             return false
+//         }
+//         left++
+//         right--
+//     }
+//     return true
+// }
+
+// func countSubstrings(s string) int {
+//     ans := 0
+//     for i := 0; i < len(s); i++ {
+//         for j := i; j < len(s); j++ {
+//             if isPalindrome(s, i, j) {
+//                 ans++
+//             }
+//         }
+//     }
+//     return ans
+// }
+// func isPalindrome(s string, left, right int) bool {
+//     for left < right {
+//         if s[left] != s[right] {
+//             return false
+//         }
+//         left++
+//         right--
+//     }
+//     return true
+// }
+
+func countSubstrings(s string) int {
+	ans := 0
+	expand := func(left, right int) {
+		for left >= 0 && right < len(s) && s[left] == s[right] {
+			left--
+			right++
+			ans++
+		}
+	}
+	for i := 0; i < len(s); i++ {
+		expand(i, i)
+		expand(i, i+1)
+	}
+	return ans
+}
+```
+
+<hr>

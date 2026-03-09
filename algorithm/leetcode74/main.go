@@ -6,40 +6,41 @@ import (
 )
 
 func searchMatrix(matrix [][]int, target int) bool {
-	var tmp []int
-	for _, row := range matrix {
-		tmp = append(tmp, row...)
+	var nums []int
+	for _, ma := range matrix {
+		nums = append(nums, ma...)
 	}
-	left := 0
-	right := len(tmp) - 1
-	for left <= right {
+	left, right := 0, len(nums)
+	for left < right {
 		mid := (right-left)/2 + left
-		if tmp[mid] == target {
-			return true
-		} else if tmp[mid] > target {
-			right = mid - 1
+		if target <= nums[mid] {
+			right = mid
 		} else {
 			left = mid + 1
 		}
+	}
+	if left < len(nums) && nums[left] == target {
+		return true
 	}
 	return false
 }
 
 func searchMatrix1(matrix [][]int, target int) bool {
 	m, n := len(matrix), len(matrix[0])
-	left, right := 0, m*n-1
-
-	for left <= right {
-		mid := (left + right) / 2
-		row, col := mid/n, mid%n
-		val := matrix[row][col]
-		if val == target {
-			return true
-		} else if val > target {
-			right = mid - 1
+	left, right := 0, m*n
+	for left < right {
+		mid := (right-left)/2 + left
+		row := mid / n
+		col := mid % n
+		value := matrix[row][col]
+		if target <= value {
+			right = mid
 		} else {
 			left = mid + 1
 		}
+	}
+	if left < m*n && matrix[left/n][left%n] == target {
+		return true
 	}
 	return false
 }

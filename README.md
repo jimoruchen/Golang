@@ -4217,6 +4217,39 @@ func topKFrequent(nums []int, k int) []int {
 
 <hr>
 
+## 367、有效的完全平方数
+### 题目
+给你一个正整数 num 。如果 num 是一个完全平方数，则返回 true ，否则返回 false 。
+完全平方数 是一个可以写成某个整数的平方的整数。换句话说，它可以写成某个整数和自身的乘积。
+不能使用任何内置的库函数，如  sqrt 。
+
+* 示例1：
+>输入：num = 16
+>输出：true
+
+### 代码
+```go
+package main
+
+func isPerfectSquare(num int) bool {
+	left, right := 0, num
+	for left < right {
+		mid := (right-left)/2 + left
+		if num <= mid*mid {
+			right = mid
+		} else {
+			left = mid + 1
+		}
+	}
+	if left*left == num {
+		return true
+	}
+	return false
+}
+```
+
+<hr>
+
 ## 377、组合总和 Ⅳ
 ### 题目
 给你一个由 不同 整数组成的数组 nums ，和一个目标整数 target 。请你从 nums 中找出并返回总和为 target 的元素排列的个数。

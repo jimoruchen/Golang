@@ -143,7 +143,7 @@ func main() {
 
 ## 3、无重复字符的最长子串
 ### 题目
-给定一个字符串 s ，请你找出其中不含有重复字符的 最长子串的长度。
+给定一个字符串 s ，请你找出其中不含有重复字符的最长子串的长度。
 
 * 示例1：
 >输入：s = "abcabcbb"
@@ -5112,6 +5112,39 @@ func main() {
 	PrintLinkedList(head)
 	middle := middleNode(head)
 	PrintLinkedList(middle)
+}
+```
+
+<hr>
+
+## 977、有序数组的平方
+### 题目
+给你一个按 非递减顺序 排序的整数数组 nums，返回 每个数字的平方 组成的新数组，要求也按 非递减顺序 排序。
+
+* 示例1：
+>输入：nums = [-4,-1,0,3,10]
+>输出：[0,1,9,16,100]
+
+### 代码
+```go
+package main
+
+func sortedSquares(nums []int) []int {
+	ans := make([]int, len(nums))
+	for i := 0; i < len(nums); i++ {
+		nums[i] = nums[i] * nums[i]
+	}
+	left, right := 0, len(nums)-1
+	for pos := len(nums) - 1; pos >= 0; pos-- {
+		if nums[left] > nums[right] {
+			ans[pos] = nums[left]
+			left++
+		} else {
+			ans[pos] = nums[right]
+			right--
+		}
+	}
+	return ans
 }
 ```
 

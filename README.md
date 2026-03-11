@@ -3455,6 +3455,40 @@ func main() {
 
 <hr>
 
+## 209、长度最小的子数组
+### 题目
+给定一个含有 n 个正整数的数组和一个正整数 target 。
+找出该数组中满足其总和大于等于 target 的长度最小的 子数组 [numsl, numsl+1, ..., numsr-1, numsr] ，并返回其长度。如果不存在符合条件的子数组，返回 0 。
+
+* 示例1：
+>输入：target = 7, nums = [2,3,1,2,4,3]
+>输出：2
+
+### 代码
+```go
+package main
+
+func minSubArrayLen(target int, nums []int) int {
+	left := 0
+	sum := 0
+	n := len(nums) + 1
+	for right := 0; right < len(nums); right++ {
+		sum += nums[right]
+		for sum >= target {
+			n = min(n, right-left+1)
+			sum -= nums[left]
+			left++
+		}
+	}
+	if n == len(nums)+1 {
+		n = 0
+	}
+	return n
+}
+```
+
+<hr>
+
 ## 215、数组中的第K个最大元素
 ### 题目
 给定整数数组 nums 和整数 k，请返回数组中第 k 个最大的元素。

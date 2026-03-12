@@ -1359,6 +1359,54 @@ func main() {
 
 <hr>
 
+## 54、螺旋矩阵 II
+### 题目
+给你一个正整数 n ，生成一个包含 1 到 n2 所有元素，且元素按顺时针顺序螺旋排列的 n x n 正方形矩阵 matrix 。
+
+* 示例1：
+>输入：n = 3
+>输出：[[1,2,3],[8,9,4],[7,6,5]]
+
+### 代码
+```go
+package main
+
+func generateMatrix(n int) [][]int {
+	matrix := make([][]int, n)
+	for i := range matrix {
+		matrix[i] = make([]int, n)
+	}
+	left, top := 0, 0
+	right, bottom := n-1, n-1
+	tmp := 1
+	for left <= right && top <= bottom {
+		for j := left; j <= right; j++ {
+			matrix[top][j] = tmp
+			tmp++
+		}
+		top++
+		for i := top; i <= bottom; i++ {
+			matrix[i][right] = tmp
+			tmp++
+		}
+		right--
+		for j := right; j >= left; j-- {
+			matrix[bottom][j] = tmp
+			tmp++
+		}
+		bottom--
+		for i := bottom; i >= top; i-- {
+			matrix[i][left] = tmp
+			tmp++
+		}
+		left++
+	}
+	return matrix
+}
+```
+
+<hr>
+
 ## 62、不同路径
 ### 题目
 一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为 “Start” ）。

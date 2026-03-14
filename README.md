@@ -4955,6 +4955,50 @@ func change(amount int, coins []int) int {
 
 <hr>
 
+## 541、反转字符串 II
+### 题目
+给定一个字符串 s 和一个整数 k，从字符串开头算起，每计数至 2k 个字符，就反转这 2k 字符中的前 k 个字符。
+如果剩余字符少于 k 个，则将剩余字符全部反转。
+如果剩余字符小于 2k 但大于或等于 k 个，则反转前 k 个字符，其余字符保持原样。
+
+* 示例1：
+>输入：s = "abcdefg", k = 2
+>输出："bacdfeg"
+
+### 代码
+```go
+package main
+
+func reverseStr(s string, k int) string {
+	n := len(s)
+	chars := []byte(s)
+	right := 0
+	for right < n {
+		if n-right <= k {
+			reverse(chars, right, n-1)
+			break
+		} else if n-right > k && n-right <= 2*k {
+			reverse(chars, right, right+k-1)
+			break
+		} else {
+			reverse(chars, right, right+k-1)
+			right += 2 * k
+		}
+	}
+	return string(chars)
+}
+
+func reverse(chars []byte, left, right int) {
+	for left < right {
+		chars[left], chars[right] = chars[right], chars[left]
+		left++
+		right--
+	}
+}
+```
+
+<hr>
+
 ## 543、二叉树的直径
 ### 题目
 给你一棵二叉树的根节点，返回该树的 直径 。

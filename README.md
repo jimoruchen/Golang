@@ -4867,6 +4867,51 @@ func findContentChildren(g []int, s []int) int {
 
 <hr>
 
+## 459、重复的子字符串
+### 题目
+给定一个非空的字符串 s ，检查是否可以通过由它的一个子串重复多次构成。
+
+* 示例1：
+>输入：s = "abab"
+>输出：true
+
+### 代码
+```go
+package main
+
+import "strings"
+
+func repeatedSubstringPattern(s string) bool {
+	for i := 1; i <= len(s)/2; i++ {
+		if len(s)%i != 0 {
+			continue
+		}
+		flag := true
+		sub := s[:i]
+		for j := i; j < len(s); j += i {
+			if sub != s[j:j+i] {
+				flag = false
+				break
+			}
+		}
+		if flag {
+			return true
+		}
+	}
+	return false
+}
+
+func repeatedSubstringPattern1(s string) bool {
+	ss := s + s
+	// 去掉首尾字符
+	ss = ss[1 : len(ss)-1]
+	// 判断 s 是否在 ss 中
+	return strings.Contains(ss, s)
+}
+```
+
+<hr>
+
 ## 485、最大连续 1 的个数
 ### 题目
 给定一个二进制数组 nums ， 计算其中最大连续 1 的个数。

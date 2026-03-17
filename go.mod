@@ -1,6 +1,6 @@
 module Golang
 
-go 1.25
+go 1.24.0
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect

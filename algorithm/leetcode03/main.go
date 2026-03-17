@@ -36,6 +36,20 @@ func lengthOfLongestSubstring1(s string) int {
 	return res
 }
 
+func lengthOfLongestSubstring3(s string) int {
+	maps := make(map[byte]bool)
+	left, ans := 0, 0
+	for right := 0; right < len(s); right++ {
+		for maps[s[right]] {
+			maps[s[left]] = false
+			left++
+		}
+		maps[s[right]] = true
+		ans = max(ans, right-left+1)
+	}
+	return ans
+}
+
 func main() {
 	s := "abcabcbb"
 	res := lengthOfLongestSubstring(s)

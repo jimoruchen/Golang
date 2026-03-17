@@ -5515,6 +5515,63 @@ func main() {
 
 <hr>
 
+## 912、排序数组
+### 题目
+给你一个整数数组 nums，请你将该数组升序排列。
+你必须在 不使用任何内置函数 的情况下解决问题，时间复杂度为 O(nlog(n))，并且空间复杂度尽可能小。
+
+* 示例1：
+>输入：nums = [5,2,3,1]
+>输出：[1,2,3,5]
+
+### 代码
+```go
+package main
+
+import (
+	"math/rand"
+	"slices"
+)
+
+func sortArray(nums []int) []int {
+	if slices.IsSorted(nums) {
+		return nums
+	}
+	quickSort(nums, 0, len(nums)-1)
+	return nums
+}
+
+func quickSort(nums []int, left, right int) {
+	if left >= right {
+		return
+	}
+	pivot := partition(nums, left, right)
+	quickSort(nums, pivot+1, right)
+	quickSort(nums, left, pivot-1)
+}
+
+func partition(nums []int, left, right int) int {
+	index := rand.Intn(right-left+1) + left
+	nums[left], nums[index] = nums[index], nums[left]
+	i, j := left, right
+	for i < j {
+		for i < j && nums[j] >= nums[left] {
+			j--
+		}
+		for i < j && nums[i] <= nums[left] {
+			i++
+		}
+		if i < j {
+			nums[i], nums[j] = nums[j], nums[i]
+		}
+	}
+	nums[left], nums[i] = nums[i], nums[left]
+	return i
+}
+```
+
+<hr>
+
 ## 977、有序数组的平方
 ### 题目
 给你一个按 非递减顺序 排序的整数数组 nums，返回 每个数字的平方 组成的新数组，要求也按 非递减顺序 排序。

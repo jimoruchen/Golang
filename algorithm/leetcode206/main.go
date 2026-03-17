@@ -20,6 +20,19 @@ func reverseList(head *ListNode) *ListNode {
 	return dummy.Next
 }
 
+func reverseList1(head *ListNode) *ListNode {
+	dummy := &ListNode{-1, head}
+	pre := dummy
+	cur := head
+	for cur != nil && cur.Next != nil {
+		tmp := cur.Next
+		cur.Next = tmp.Next
+		tmp.Next = pre.Next
+		pre.Next = tmp
+	}
+	return dummy.Next
+}
+
 func CreateLinkedList(nums []int) *ListNode {
 	if len(nums) == 0 {
 		return nil

@@ -67,6 +67,26 @@ func getIntersectionNode2(headA, headB *ListNode) *ListNode {
 	return nil
 }
 
+func getIntersectionNode3(headA, headB *ListNode) *ListNode {
+	if headA == nil || headB == nil {
+		return nil
+	}
+	preA, preB := headA, headB
+	for preA != preB {
+		if preA != nil {
+			preA = preA.Next
+		} else {
+			preA = headB
+		}
+		if preB != nil {
+			preB = preB.Next
+		} else {
+			preB = headA
+		}
+	}
+	return preA
+}
+
 func CreatLinkList(nums []int) *ListNode {
 	if len(nums) == 0 {
 		return nil

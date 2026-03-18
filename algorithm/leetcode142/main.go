@@ -58,6 +58,30 @@ func detectCycle2(head *ListNode) *ListNode {
 	return nil
 }
 
+func detectCycle3(head *ListNode) *ListNode {
+	slow, fast := head, head
+	hasCycle := false
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			hasCycle = true
+			break
+		}
+	}
+	if !hasCycle {
+		return nil
+	}
+	tmp := head
+	for tmp != fast {
+		tmp = tmp.Next
+		fast = fast.Next
+	}
+	return tmp
+}
+
+// a + b + a + b  =  a + b + c + b
+
 func CreateLinkedList(nums []int) *ListNode {
 	head := &ListNode{Val: nums[0]}
 	cur := head

@@ -54,6 +54,21 @@ func hasCycle2(head *ListNode) bool {
 	return false
 }
 
+func hasCycle3(head *ListNode) bool {
+	if head == nil || head.Next == nil {
+		return false
+	}
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next      // 慢指针走一步
+		fast = fast.Next.Next // 快指针走两步
+		if slow == fast {     // 相遇说明有环
+			return true
+		}
+	}
+	return false
+}
+
 func CreateLinkedList(nums []int) *ListNode {
 	head := &ListNode{Val: nums[0]}
 	cur := head

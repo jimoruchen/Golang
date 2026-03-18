@@ -88,6 +88,24 @@ func isPalindrome1(head *ListNode) bool {
 	return true
 }
 
+func isPalindrome2(head *ListNode) bool {
+	if head == nil || head.Next == nil {
+		return true
+	}
+	var tmp []int
+	cur := head
+	for cur != nil {
+		tmp = append(tmp, cur.Val)
+		cur = cur.Next
+	}
+	for left, right := 0, len(tmp)-1; left < right; left, right = left+1, right-1 {
+		if tmp[left] != tmp[right] {
+			return false
+		}
+	}
+	return true
+}
+
 func main() {
 	var nums = []int{1, 2, 2, 1}
 	head := CreateLinkedList(nums)

@@ -5568,6 +5568,30 @@ func partition(nums []int, left, right int) int {
 	nums[left], nums[i] = nums[i], nums[left]
 	return i
 }
+
+func quickSort1(nums []int) {
+	if len(nums) <= 1 {
+		return
+	}
+	index := rand.Intn(len(nums))
+	nums[0], nums[index] = nums[index], nums[0]
+	pivot := nums[0]
+	left, right := 1, len(nums) - 1
+	for left <= right {
+		if nums[left] <= pivot {
+			left++
+		} else if nums[right] >= pivot {
+			right--
+		} else {
+			nums[left], nums[right] = nums[right], nums[left]
+			left++
+			right--
+		}
+	}
+	nums[0], nums[right] = nums[right], nums[0]
+	quickSort1(nums[:right])
+	quickSort1(nums[right+1:])
+}
 ```
 
 <hr>

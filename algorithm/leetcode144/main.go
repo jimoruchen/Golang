@@ -9,18 +9,18 @@ type TreeNode struct {
 }
 
 func preorderTraversal(root *TreeNode) []int {
-	var result []int
+	var ans []int
 	var preorder func(*TreeNode)
 	preorder = func(node *TreeNode) {
 		if node == nil {
 			return
 		}
-		result = append(result, node.Val)
+		ans = append(ans, node.Val)
 		preorder(node.Left)
 		preorder(node.Right)
 	}
 	preorder(root)
-	return result
+	return ans
 }
 
 func main() {

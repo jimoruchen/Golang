@@ -9,7 +9,7 @@ type TreeNode struct {
 }
 
 func postorderTraversal(root *TreeNode) []int {
-	var result []int
+	var ans []int
 	var postorder func(*TreeNode)
 	postorder = func(node *TreeNode) {
 		if node == nil {
@@ -17,10 +17,10 @@ func postorderTraversal(root *TreeNode) []int {
 		}
 		postorder(node.Left)
 		postorder(node.Right)
-		result = append(result, node.Val)
+		ans = append(ans, node.Val)
 	}
 	postorder(root)
-	return result
+	return ans
 }
 
 func main() {

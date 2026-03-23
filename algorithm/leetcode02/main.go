@@ -31,6 +31,38 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 	return dummy.Next
 }
 
+func addTwoNumbers1(l1 *ListNode, l2 *ListNode) *ListNode {
+	dummy := &ListNode{Val: -1}
+	pre := dummy
+	carry := 0
+	for l1 != nil && l2 != nil {
+		tmp := l1.Val + l2.Val + carry
+		pre.Next = &ListNode{Val: tmp % 10}
+		carry = tmp / 10
+		l1 = l1.Next
+		l2 = l2.Next
+		pre = pre.Next
+	}
+	for l1 != nil {
+		tmp := carry + l1.Val
+		pre.Next = &ListNode{Val: tmp % 10}
+		carry = tmp / 10
+		l1 = l1.Next
+		pre = pre.Next
+	}
+	for l2 != nil {
+		tmp := carry + l2.Val
+		pre.Next = &ListNode{Val: tmp % 10}
+		carry = tmp / 10
+		l2 = l2.Next
+		pre = pre.Next
+	}
+	if carry != 0 {
+		pre.Next = &ListNode{Val: carry}
+	}
+	return dummy.Next
+}
+
 func CreateLinkedList(nums []int) *ListNode {
 	head := &ListNode{Val: nums[0]}
 	cur := head

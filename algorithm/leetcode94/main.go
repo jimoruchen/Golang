@@ -9,18 +9,18 @@ type TreeNode struct {
 }
 
 func inorderTraversal(root *TreeNode) []int {
-	var result []int
+	var ans []int
 	var inorder func(*TreeNode)
 	inorder = func(node *TreeNode) {
 		if node == nil {
 			return
 		}
 		inorder(node.Left)
-		result = append(result, node.Val)
+		ans = append(ans, node.Val)
 		inorder(node.Right)
 	}
 	inorder(root)
-	return result
+	return ans
 }
 
 func main() {

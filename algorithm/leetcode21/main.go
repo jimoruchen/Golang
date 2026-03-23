@@ -8,18 +8,17 @@ type ListNode struct {
 }
 
 func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
-	dummy := &ListNode{Val: -1}
+	dummy := &ListNode{Val: 0}
 	pre := dummy
 	for list1 != nil && list2 != nil {
-		if list1.Val < list2.Val {
+		if list1.Val <= list2.Val {
 			pre.Next = list1
 			list1 = list1.Next
-			pre = pre.Next
 		} else {
 			pre.Next = list2
 			list2 = list2.Next
-			pre = pre.Next
 		}
+		pre = pre.Next
 	}
 	if list1 != nil {
 		pre.Next = list1

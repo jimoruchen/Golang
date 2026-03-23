@@ -12,25 +12,25 @@ func levelOrder(root *TreeNode) [][]int {
 	if root == nil {
 		return nil
 	}
-	var result [][]int
-	q := []*TreeNode{root}
-	for len(q) > 0 {
-		size := len(q)
-		tmp := make([]int, size)
-		for i := 0; i < size; i++ {
-			node := q[0]
-			q = q[1:]
-			tmp[i] = node.Val
+	var ans [][]int
+	queue := []*TreeNode{root}
+	for len(queue) > 0 {
+		var tmp []int
+		length := len(queue)
+		for i := 0; i < length; i++ {
+			node := queue[0]
+			queue = queue[1:]
+			tmp = append(tmp, node.Val)
 			if node.Left != nil {
-				q = append(q, node.Left)
+				queue = append(queue, node.Left)
 			}
 			if node.Right != nil {
-				q = append(q, node.Right)
+				queue = append(queue, node.Right)
 			}
 		}
-		result = append(result, tmp)
+		ans = append(ans, tmp)
 	}
-	return result
+	return ans
 }
 
 func main() {

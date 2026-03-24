@@ -26,6 +26,17 @@ func buildBST(nums []int, left, right int) *TreeNode {
 	return root
 }
 
+func build(nums []int, left, right int) *TreeNode {
+	if left > right {
+		return nil
+	}
+	mid := (right-left)/2 + left
+	root := &TreeNode{Val: nums[mid]}
+	root.Left = build(nums, left, mid-1)
+	root.Right = build(nums, mid+1, right)
+	return root
+}
+
 func inorderTraversal(root *TreeNode) []int {
 	var ans []int
 	var inorder func(root *TreeNode)

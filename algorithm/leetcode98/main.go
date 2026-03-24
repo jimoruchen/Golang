@@ -12,7 +12,7 @@ type TreeNode struct {
 }
 
 func isValidBST(root *TreeNode) bool {
-	minValue := math.MinInt
+	min := math.MinInt
 	var inorder func(*TreeNode) bool
 	inorder = func(node *TreeNode) bool {
 		if node == nil {
@@ -21,10 +21,10 @@ func isValidBST(root *TreeNode) bool {
 		if !inorder(node.Left) {
 			return false
 		}
-		if node.Val <= minValue {
+		if node.Val <= min {
 			return false
 		}
-		minValue = node.Val
+		min = node.Val
 		return inorder(node.Right)
 	}
 	return inorder(root)

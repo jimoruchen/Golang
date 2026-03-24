@@ -28,7 +28,7 @@ func kthSmallest1(root *TreeNode, k int) (ans int) {
 			return
 		}
 		inorder(node.Left)
-		k--
+		k-- // 现在轮到当前节点被访问了
 		if k == 0 {
 			ans = node.Val
 		}

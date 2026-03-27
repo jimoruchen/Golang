@@ -44,6 +44,27 @@ func combine1(n int, k int) [][]int {
 	return result
 }
 
+func combine2(n int, k int) [][]int {
+	var result [][]int
+	var path []int
+	var backtracking func(startIndex int)
+	backtracking = func(startIndex int) {
+		if len(path) == k {
+			tmp := make([]int, len(path))
+			copy(tmp, path)
+			result = append(result, tmp)
+			return
+		}
+		for i := startIndex; i <= n-(k-len(path))+1; i++ {
+			path = append(path, i)
+			backtracking(i + 1)
+			path = path[:len(path)-1]
+		}
+	}
+	backtracking(1)
+	return result
+}
+
 func main() {
 	n := 4
 	k := 2
